@@ -1,7 +1,5 @@
 import {
   ArrowRight,
-  Clock3,
-  MapPin,
 } from "lucide-react";
 
 import Link from "next/link";
@@ -17,6 +15,8 @@ import {
 } from "motion/react";
 
 import { useAgency } from "@/context/AgencyContext";
+
+import TourPackageCard from "@/components/packages/TourPackageCard";
 
 import {
   getFeaturedPackages,
@@ -277,233 +277,21 @@ const TourPackages = () => {
               tourPackage,
               index
             ) => (
-              <motion.article
+              <TourPackageCard
                 key={
                   tourPackage._id
                 }
-                initial={
-                  shouldReduceMotion
-                    ? false
-                    : {
-                        opacity: 0,
-                        y: 34,
-                      }
+                tourPackage={
+                  tourPackage
                 }
-                whileInView={{
-                  opacity: 1,
-                  y: 0,
-                }}
-                viewport={{
-                  once: true,
-                  amount: 0.22,
-                }}
-                transition={{
-                  duration:
-                    shouldReduceMotion
-                      ? 0
-                      : 0.78,
-                  delay:
-                    shouldReduceMotion
-                      ? 0
-                      : index *
-                        0.13,
-                  ease: [
-                    0.22,
-                    1,
-                    0.36,
-                    1,
-                  ],
-                }}
-                whileHover={
-                  shouldReduceMotion
-                    ? undefined
-                    : {
-                        y: -7,
-                        scale:
-                          1.012,
-                      }
+                index={index}
+                primaryColor={
+                  agency.primaryColor
                 }
-                className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow duration-300 hover:shadow-lg"
-              >
-                {/* Image */}
-                <Link
-                  href={`/packages/${tourPackage.slug}`}
-                  className="block"
-                >
-                  <div className="relative h-40 overflow-hidden">
-                    <motion.img
-                      src={
-                        tourPackage.cardImage
-                      }
-                      alt={
-                        tourPackage.name
-                      }
-                      className="h-full w-full object-cover"
-                      whileHover={
-                        shouldReduceMotion
-                          ? undefined
-                          : {
-                              scale:
-                                1.07,
-                            }
-                      }
-                      transition={{
-                        duration:
-                          0.6,
-                        ease:
-                          "easeOut",
-                      }}
-                    />
-
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
-                  </div>
-                </Link>
-
-                {/* Content */}
-                <div className="flex flex-1 flex-col p-4">
-                  <Link
-                    href={`/packages/${tourPackage.slug}`}
-                  >
-                    <h3
-                      className="text-lg font-bold leading-6 transition"
-                      style={{
-                        color:
-                          agency.primaryColor,
-                      }}
-                      onMouseEnter={(
-                        event
-                      ) => {
-                        event.currentTarget.style.color =
-                          agency.accentColor;
-                      }}
-                      onMouseLeave={(
-                        event
-                      ) => {
-                        event.currentTarget.style.color =
-                          agency.primaryColor;
-                      }}
-                    >
-                      {
-                        tourPackage.name
-                      }
-                    </h3>
-                  </Link>
-
-                  <div className="mt-3 space-y-2 text-sm text-gray-500">
-                    <div className="flex items-center gap-2">
-                      <Clock3
-                        size={16}
-                        className="shrink-0"
-                        style={{
-                          color:
-                            agency.accentColor,
-                        }}
-                      />
-
-                      <span>
-                        {
-                          tourPackage.duration
-                        }
-                      </span>
-                    </div>
-
-                    <div className="flex items-start gap-2">
-                      <MapPin
-                        size={16}
-                        className="mt-0.5 shrink-0"
-                        style={{
-                          color:
-                            agency.accentColor,
-                        }}
-                      />
-
-                      <span className="line-clamp-2">
-                        {tourPackage.destinations
-                          .map(
-                            (
-                              destination
-                            ) =>
-                              destination.name
-                          )
-                          .join(
-                            ", "
-                          )}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Bottom Actions */}
-                  <div className="mt-auto pt-4">
-                    <div className="flex items-center justify-between gap-1.5 border-t border-gray-100 pt-3">
-                      <Link
-                        href={`/packages/${tourPackage.slug}`}
-                        className="whitespace-nowrap text-xs font-semibold transition"
-                        style={{
-                          color:
-                            agency.primaryColor,
-                        }}
-                        onMouseEnter={(
-                          event
-                        ) => {
-                          event.currentTarget.style.color =
-                            agency.accentColor;
-                        }}
-                        onMouseLeave={(
-                          event
-                        ) => {
-                          event.currentTarget.style.color =
-                            agency.primaryColor;
-                        }}
-                      >
-                        View Details
-                      </Link>
-
-                      <motion.div
-                        whileHover={
-                          shouldReduceMotion
-                            ? undefined
-                            : {
-                                scale:
-                                  1.04,
-                                y: -1,
-                              }
-                        }
-                        whileTap={
-                          shouldReduceMotion
-                            ? undefined
-                            : {
-                                scale:
-                                  0.97,
-                              }
-                        }
-                        transition={{
-                          duration:
-                            0.2,
-                        }}
-                      >
-                        <Link
-                          href={`/enquiry?package=${encodeURIComponent(
-                            tourPackage.slug
-                          )}`}
-                          className="inline-flex items-center gap-1 whitespace-nowrap rounded-lg px-2.5 py-2 text-xs font-semibold text-white transition hover:opacity-90"
-                          style={{
-                            backgroundColor:
-                              agency.accentColor,
-                          }}
-                        >
-                          Enquire Now
-
-                          <ArrowRight
-                            size={
-                              13
-                            }
-                          />
-                        </Link>
-                      </motion.div>
-                    </div>
-                  </div>
-                </div>
-              </motion.article>
+                accentColor={
+                  agency.accentColor
+                }
+              />
             )
           )}
 
@@ -549,8 +337,7 @@ const TourPackages = () => {
                 ? undefined
                 : {
                     y: -7,
-                    scale:
-                      1.012,
+                    scale: 1.012,
                   }
             }
             className="relative flex min-h-[390px] overflow-hidden rounded-2xl border border-orange-100 bg-cover bg-center shadow-sm transition-shadow duration-300 hover:shadow-lg"
@@ -589,21 +376,18 @@ const TourPackages = () => {
                     ? undefined
                     : {
                         y: -2,
-                        scale:
-                          1.035,
+                        scale: 1.035,
                       }
                 }
                 whileTap={
                   shouldReduceMotion
                     ? undefined
                     : {
-                        scale:
-                          0.97,
+                        scale: 0.97,
                       }
                 }
                 transition={{
-                  duration:
-                    0.2,
+                  duration: 0.2,
                 }}
               >
                 <Link

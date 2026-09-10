@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export interface PackageDestination {
   name: string;
   image: string;
@@ -26,6 +28,7 @@ export interface TourPackage {
   duration: string;
 
   destinations: PackageDestination[];
+
   tourTypes: string[];
   vehicleOptions: string[];
   highlights: string[];
@@ -62,80 +65,74 @@ const getBackendUrl = () => {
   return BACKEND_URL;
 };
 
-export const getFeaturedPackages =
-  async (
-    hostname: string
-  ): Promise<TourPackage[]> => {
-    const backendUrl =
-      getBackendUrl();
+/* =========================================
+   GET FEATURED PACKAGES
+========================================= */
 
-    const response = await fetch(
-      `${backendUrl}/package/featured?hostname=${encodeURIComponent(
-        hostname
-      )}`
+export const getFeaturedPackages = async (
+  hostname: string
+): Promise<TourPackage[]> => {
+  const backendUrl =
+    getBackendUrl();
+
+  const response =
+    await axios.get<PackagesResponse>(
+      `${backendUrl}/package/featured`,
+      {
+        params: {
+          hostname,
+        },
+      }
     );
 
-    if (!response.ok) {
-      throw new Error(
-        "Unable to load featured packages"
-      );
-    }
+  return response.data.packages;
+};
 
-    const data: PackagesResponse =
-      await response.json();
+/* =========================================
+   GET ALL PACKAGES
+========================================= */
 
-    return data.packages;
-  };
+export const getPackages = async (
+  hostname: string
+): Promise<TourPackage[]> => {
+  const backendUrl =
+    getBackendUrl();
 
-export const getPackages =
-  async (
-    hostname: string
-  ): Promise<TourPackage[]> => {
-    const backendUrl =
-      getBackendUrl();
-
-    const response = await fetch(
-      `${backendUrl}/package?hostname=${encodeURIComponent(
-        hostname
-      )}`
+  const response =
+    await axios.get<PackagesResponse>(
+      `${backendUrl}/package`,
+      {
+        params: {
+          hostname,
+        },
+      }
     );
 
-    if (!response.ok) {
-      throw new Error(
-        "Unable to load packages"
-      );
-    }
+  return response.data.packages;
+};
 
-    const data: PackagesResponse =
-      await response.json();
+/* =========================================
+   GET PACKAGE BY SLUG
+========================================= */
 
-    return data.packages;
-  };
+export const getPackageBySlug = async (
+  hostname: string,
+  slug: string
+): Promise<TourPackage> => {
+  const backendUrl =
+    getBackendUrl();
 
-export const getPackageBySlug =
-  async (
-    hostname: string,
-    slug: string
-  ): Promise<TourPackage> => {
-    const backendUrl =
-      getBackendUrl();
-
-    const response = await fetch(
+  const response =
+    await axios.get<PackageResponse>(
       `${backendUrl}/package/${encodeURIComponent(
         slug
-      )}?hostname=${encodeURIComponent(
-        hostname
-      )}`
+      )}`,
+      {
+        params: {
+          hostname,
+        },
+      }
     );
 
-    if (!response.ok) {
-      throw new Error(
-        "Unable to load package"
-      );
-    }
-
-    const data: PackageResponse =
-      await response.json();
-
-    return data.package;
-  };
+  return response.data.package;
+};

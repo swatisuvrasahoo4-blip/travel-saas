@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export interface DestinationAttraction {
   title: string;
   image: string;
@@ -7,19 +9,27 @@ export interface DestinationAttraction {
 export interface Destination {
   _id: string;
   agencyId: string;
+
   name: string;
   slug: string;
   subtitle: string;
+
   heroImage: string;
   cardImage: string;
+
   description: string;
+
   attractions: DestinationAttraction[];
+
   bestTimeToVisit: string;
   idealDuration: string;
   location: string;
   type: string;
+
   ctaImage: string;
+
   gallery: string[];
+
   status: "active" | "inactive";
 }
 
@@ -49,55 +59,44 @@ export const getDestinations = async (
     );
   }
 
-  const response = await fetch(
-    `${BACKEND_URL}/destination?hostname=${encodeURIComponent(
-      hostname
-    )}`
-  );
-
-  if (!response.ok) {
-    throw new Error(
-      "Unable to load destinations"
+  const response =
+    await axios.get<DestinationsResponse>(
+      `${BACKEND_URL}/destination`,
+      {
+        params: {
+          hostname,
+        },
+      }
     );
-  }
 
-  const data: DestinationsResponse =
-    await response.json();
-
-  return data.destinations;
+  return response.data.destinations;
 };
 
 /* =========================================
    GET DESTINATION BY SLUG
 ========================================= */
 
-export const getDestinationBySlug =
-  async (
-    hostname: string,
-    slug: string
-  ): Promise<Destination> => {
-    if (!BACKEND_URL) {
-      throw new Error(
-        "Backend URL is not configured"
-      );
-    }
+export const getDestinationBySlug = async (
+  hostname: string,
+  slug: string
+): Promise<Destination> => {
+  if (!BACKEND_URL) {
+    throw new Error(
+      "Backend URL is not configured"
+    );
+  }
 
-    const response = await fetch(
+  const response =
+    await axios.get<DestinationResponse>(
       `${BACKEND_URL}/destination/${encodeURIComponent(
         slug
-      )}?hostname=${encodeURIComponent(
-        hostname
-      )}`
+      )}`,
+      {
+        params: {
+          hostname,
+        },
+      }
     );
 
-    if (!response.ok) {
-      throw new Error(
-        "Unable to load destination"
-      );
-    }
-
-    const data: DestinationResponse =
-      await response.json();
-
-    return data.destination;
-  };
+  return response.data.destination;
+};

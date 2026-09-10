@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export interface AgencyEnquiryOptions {
   destinations: string[];
   tripTypes: string[];
@@ -108,18 +110,74 @@ export interface AgencyAboutCta {
 export interface AgencyAbout {
   hero: AgencyAboutHero;
   story: AgencyAboutStory;
+
   reasonsLabel: string;
   reasonsHeading: string;
   reasonsDescription: string;
   reasons: AgencyAboutReason[];
+
   statsBackgroundImage: string;
   stats: AgencyAboutStat[];
+
   missionVisionLabel: string;
   missionVisionTitle: string;
   missionVisionDescription: string;
+
   mission: AgencyMissionVisionItem;
   vision: AgencyMissionVisionItem;
+
   cta: AgencyAboutCta;
+}
+
+/* =========================================
+   PACKAGES PAGE CTA
+========================================= */
+
+export interface AgencyPackagesPageCta {
+  label: string;
+  title: string;
+  description: string;
+  buttonText: string;
+  buttonLink: string;
+  image: string;
+}
+
+/* =========================================
+   PACKAGES PAGE
+========================================= */
+
+export interface AgencyPackagesPage {
+  heroImage: string;
+  label: string;
+  title: string;
+  description: string;
+
+  cta: AgencyPackagesPageCta;
+}
+
+/* =========================================
+   PACKAGE DETAIL CTA
+========================================= */
+
+export interface AgencyPackageDetailCta {
+  label: string;
+  title: string;
+  description: string;
+  buttonText: string;
+  buttonLink: string;
+  image: string;
+}
+
+/* =========================================
+   PACKAGE DETAIL PAGE
+========================================= */
+
+export interface AgencyPackageDetail {
+  label: string;
+  vehicleOptionsImage: string;
+  quote: string;
+
+  cta: AgencyPackageDetailCta;
 }
 
 /* =========================================
@@ -128,25 +186,49 @@ export interface AgencyAbout {
 
 export interface Agency {
   _id: string;
+
   name: string;
+
   slug: string;
+
   domains: string[];
-  phone: string;
+
+  phones: string[];
+
   email: string;
+
   address: string;
+
   tagline: string;
+
   logo: string;
+
   favicon: string;
+
   heroImage: string;
+
   servicesBackgroundImage: string;
+
   travelTypes?: AgencyTravelType[];
+
   featuredDestinations?: AgencyFeaturedDestination[];
+
   enquiryOptions?: AgencyEnquiryOptions;
+
   whyChooseUs?: AgencyWhyChooseUs;
+
   about?: AgencyAbout;
+
+  packagesPage?: AgencyPackagesPage;
+
+  packageDetail?: AgencyPackageDetail;
+
   primaryColor: string;
+
   secondaryColor: string;
+
   accentColor: string;
+
   status: "active" | "inactive";
 }
 
@@ -159,8 +241,18 @@ interface AgencyResponse {
   agency: Agency;
 }
 
+/* =========================================
+   BACKEND URL
+========================================= */
+
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_BACKEND_URL;
+
+if (!BACKEND_URL) {
+  console.warn(
+    "NEXT_PUBLIC_BACKEND_URL is not configured"
+  );
+}
 
 /* =========================================
    GET AGENCY BY DOMAIN
@@ -175,20 +267,15 @@ export const getAgencyByDomain = async (
     );
   }
 
-  const response = await fetch(
-    `${BACKEND_URL}/agency/domain?hostname=${encodeURIComponent(
-      hostname
-    )}`
-  );
-
-  if (!response.ok) {
-    throw new Error(
-      "Unable to load agency"
+  const response =
+    await axios.get<AgencyResponse>(
+      `${BACKEND_URL}/agency/domain`,
+      {
+        params: {
+          hostname,
+        },
+      }
     );
-  }
 
-  const data: AgencyResponse =
-    await response.json();
-
-  return data.agency;
+  return response.data.agency;
 };

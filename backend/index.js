@@ -1,16 +1,28 @@
 import dns from "dns/promises";
 
 import express from "express";
+
 import dotenv from "dotenv";
+
 import cors from "cors";
+
 import helmet from "helmet";
+
 import rateLimit from "express-rate-limit";
 
 import agencyRoutes from "./routes/agency.js";
+
 import destinationRoutes from "./routes/destination.js";
+
 import packageRoutes from "./routes/package.js";
+
 import reviewRoutes from "./routes/review.js";
+
 import galleryRoutes from "./routes/gallery.js";
+
+import vehicleRoutes from "./routes/vehicle.js";
+
+import contactMessageRoutes from "./routes/contactMessage.js";
 
 import connectDB from "./config/db.js";
 
@@ -74,6 +86,7 @@ app.use(
        * header, such as server-to-server
        * requests.
        */
+
       if (!origin) {
         return callback(
           null,
@@ -84,6 +97,7 @@ app.use(
       /*
        * Allow configured frontend domains.
        */
+
       if (
         allowedOrigins.includes(
           origin
@@ -98,6 +112,7 @@ app.use(
       /*
        * Block unknown origins.
        */
+
       return callback(
         new Error(
           "Not allowed by CORS"
@@ -180,7 +195,7 @@ app.get(
 );
 
 /* =========================================
-   API ROUTES
+   ROUTES
 ========================================= */
 
 app.use(
@@ -206,6 +221,16 @@ app.use(
 app.use(
   "/gallery",
   galleryRoutes
+);
+
+app.use(
+  "/vehicle",
+  vehicleRoutes
+);
+
+app.use(
+  "/contact-message",
+  contactMessageRoutes
 );
 
 /* =========================================
@@ -238,6 +263,7 @@ app.use(
     /*
      * CORS error
      */
+
     if (
       error.message ===
       "Not allowed by CORS"
@@ -254,6 +280,7 @@ app.use(
     /*
      * General server error
      */
+
     return res
       .status(500)
       .json({

@@ -428,6 +428,178 @@ const aboutSchema =
   );
 
 /* =========================================
+   PACKAGES PAGE CTA
+========================================= */
+
+const packagesPageCtaSchema =
+  new mongoose.Schema(
+    {
+      label: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      title: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      description: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      buttonText: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      buttonLink: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      image: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+    },
+    {
+      _id: false,
+    }
+  );
+
+/* =========================================
+   PACKAGES PAGE
+========================================= */
+
+const packagesPageSchema =
+  new mongoose.Schema(
+    {
+      heroImage: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      label: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      title: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      description: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      cta: {
+        type: packagesPageCtaSchema,
+        default: () => ({}),
+      },
+    },
+    {
+      _id: false,
+    }
+  );
+
+/* =========================================
+   PACKAGE DETAIL CTA
+========================================= */
+
+const packageDetailCtaSchema =
+  new mongoose.Schema(
+    {
+      label: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      title: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      description: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      buttonText: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      buttonLink: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      image: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+    },
+    {
+      _id: false,
+    }
+  );
+
+/* =========================================
+   PACKAGE DETAIL PAGE
+========================================= */
+
+const packageDetailSchema =
+  new mongoose.Schema(
+    {
+      label: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      vehicleOptionsImage: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      quote: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      cta: {
+        type: packageDetailCtaSchema,
+        default: () => ({}),
+      },
+    },
+    {
+      _id: false,
+    }
+  );
+
+/* =========================================
    AGENCY
 ========================================= */
 
@@ -459,10 +631,19 @@ const agencySchema =
           ),
       },
 
-      phone: {
-        type: String,
-        default: "",
-        trim: true,
+      /* =====================================
+         CONTACT
+      ===================================== */
+
+      phones: {
+        type: [String],
+        default: [],
+        set: (phones) =>
+          phones
+            .map((phone) =>
+              phone.trim()
+            )
+            .filter(Boolean),
       },
 
       email: {
@@ -548,6 +729,24 @@ const agencySchema =
 
       about: {
         type: aboutSchema,
+        default: () => ({}),
+      },
+
+      /* =====================================
+         PACKAGES PAGE
+      ===================================== */
+
+      packagesPage: {
+        type: packagesPageSchema,
+        default: () => ({}),
+      },
+
+      /* =====================================
+         PACKAGE DETAIL PAGE
+      ===================================== */
+
+      packageDetail: {
+        type: packageDetailSchema,
         default: () => ({}),
       },
 

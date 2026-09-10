@@ -15,15 +15,24 @@ import {
 } from "motion/react";
 
 import {
+  useEffect,
   useRef,
   useState,
-  useEffect
 } from "react";
 
 import Link from "next/link";
 
-import { Agency } from "@/services/agencyService";
-import { useAgency } from "@/context/AgencyContext";
+import {
+  useAgency,
+} from "@/context/AgencyContext";
+
+import {
+  useEnquiry,
+} from "@/components/enquiry/EnquiryProvider";
+
+/* =========================================
+   DESTINATION FIELD
+========================================= */
 
 interface DestinationFieldProps {
   destination: string;
@@ -50,7 +59,9 @@ const DestinationField = ({
     useReducedMotion();
 
   const search =
-    destination.trim().toLowerCase();
+    destination
+      .trim()
+      .toLowerCase();
 
   const filteredDestinations =
     search
@@ -87,9 +98,9 @@ const DestinationField = ({
 
             setIsOpen(true);
           }}
-          onFocus={() =>
-            setIsOpen(true)
-          }
+          onFocus={() => {
+            setIsOpen(true);
+          }}
           placeholder="Where do you want to go?"
           autoComplete="off"
           className="w-full min-w-0 bg-transparent text-sm font-medium text-gray-800 outline-none placeholder:text-gray-400"
@@ -201,6 +212,10 @@ const DestinationField = ({
   );
 };
 
+/* =========================================
+   DATE FIELD
+========================================= */
+
 interface DateFieldProps {
   travelDate: string;
   setTravelDate: (
@@ -238,6 +253,10 @@ const DateField = ({
     </div>
   );
 };
+
+/* =========================================
+   TRAVELLER FIELD
+========================================= */
 
 interface TravellerFieldProps {
   travellers: string;
@@ -278,6 +297,10 @@ const TravellerField = ({
     </div>
   );
 };
+
+/* =========================================
+   TRIP TYPE FIELD
+========================================= */
 
 interface TripTypeFieldProps {
   tripType: string;
@@ -442,15 +465,31 @@ const TripTypeField = ({
   );
 };
 
+/* =========================================
+   ENQUIRY BUTTON
+========================================= */
+
 interface EnquiryButtonProps {
   accentColor: string;
+  destination: string;
+  travelDate: string;
+  travellers: string;
+  tripType: string;
 }
 
 const EnquiryButton = ({
   accentColor,
+  destination,
+  travelDate,
+  travellers,
+  tripType,
 }: EnquiryButtonProps) => {
   const shouldReduceMotion =
     useReducedMotion();
+
+  const {
+    openEnquiry,
+  } = useEnquiry();
 
   return (
     <motion.div
@@ -473,26 +512,52 @@ const EnquiryButton = ({
         duration: 0.2,
       }}
     >
-      <Link
-        href="/enquiry"
-        className="flex min-h-14 shrink-0 items-center justify-center gap-2 rounded-xl px-6 text-sm font-bold text-white shadow-md transition-shadow hover:shadow-lg"
+      <button
+        type="button"
+        onClick={() => {
+          openEnquiry({
+            source: "trip",
+            destination:
+              destination ||
+              undefined,
+            travelDate:
+              travelDate ||
+              undefined,
+            travellers:
+              travellers ||
+              undefined,
+            tripType:
+              tripType ||
+              undefined,
+          });
+        }}
+        className="flex min-h-14 w-full shrink-0 items-center justify-center gap-2 rounded-xl px-6 text-sm font-bold text-white shadow-md transition-shadow hover:shadow-lg"
         style={{
           backgroundColor:
             accentColor,
         }}
       >
         <Send size={18} />
+
         Enquire Now
-      </Link>
+      </button>
     </motion.div>
   );
 };
+
+/* =========================================
+   HERO
+========================================= */
 
 const Hero = () => {
   const {
     agency,
     loading,
   } = useAgency();
+
+  const {
+    openEnquiry,
+  } = useEnquiry();
 
   const [
     destination,
@@ -649,6 +714,7 @@ const Hero = () => {
             animate="visible"
             variants={{
               hidden: {},
+
               visible: {
                 transition: {
                   staggerChildren:
@@ -768,6 +834,8 @@ const Hero = () => {
                 },
               }}
             >
+              {/* Explore Tours */}
+
               <motion.div
                 whileHover={
                   shouldReduceMotion
@@ -800,6 +868,8 @@ const Hero = () => {
                 </Link>
               </motion.div>
 
+              {/* Plan Your Trip */}
+
               <motion.div
                 whileHover={
                   shouldReduceMotion
@@ -820,8 +890,14 @@ const Hero = () => {
                   duration: 0.2,
                 }}
               >
-                <Link
-                  href="/enquiry"
+                <button
+                  type="button"
+                  onClick={() =>
+                    openEnquiry({
+                      source:
+                        "trip",
+                    })
+                  }
                   className="block rounded-xl border-2 bg-white/80 px-6 py-3 text-sm font-bold backdrop-blur-sm transition-all hover:bg-white hover:shadow-md"
                   style={{
                     borderColor:
@@ -832,10 +908,14 @@ const Hero = () => {
                   }}
                 >
                   Plan Your Trip
-                </Link>
+                </button>
               </motion.div>
             </motion.div>
           </motion.div>
+
+          {/* =================================
+              SEARCH / ENQUIRY BAR
+          ================================= */}
 
           <motion.div
             className="relative z-50 mt-9 w-full min-w-0"
@@ -865,6 +945,8 @@ const Hero = () => {
           >
             <div className="overflow-visible rounded-2xl border border-white/60 bg-white/95 p-4 shadow-xl backdrop-blur-sm md:p-5">
               <div className="grid min-w-0 gap-5 md:grid-cols-2 lg:flex lg:items-end lg:gap-0">
+                {/* Destination */}
+
                 <div className="relative z-50 min-w-0 lg:flex-1 lg:border-r lg:border-gray-200 lg:px-5 lg:first:pl-0">
                   <DestinationField
                     destination={
@@ -888,6 +970,8 @@ const Hero = () => {
                   />
                 </div>
 
+                {/* Date */}
+
                 <div className="min-w-0 lg:flex-1 lg:border-r lg:border-gray-200 lg:px-5">
                   <DateField
                     travelDate={
@@ -899,6 +983,8 @@ const Hero = () => {
                   />
                 </div>
 
+                {/* Travellers */}
+
                 <div className="min-w-0 lg:flex-1 lg:border-r lg:border-gray-200 lg:px-5">
                   <TravellerField
                     travellers={
@@ -909,6 +995,8 @@ const Hero = () => {
                     }
                   />
                 </div>
+
+                {/* Trip Type - desktop only */}
 
                 <div className="relative z-50 hidden min-w-0 lg:block lg:flex-1 lg:px-5">
                   <TripTypeField
@@ -933,10 +1021,24 @@ const Hero = () => {
                   />
                 </div>
 
+                {/* Enquire */}
+
                 <div className="min-w-0 md:col-span-2 lg:col-span-1 lg:ml-4">
                   <EnquiryButton
                     accentColor={
                       agency.accentColor
+                    }
+                    destination={
+                      destination
+                    }
+                    travelDate={
+                      travelDate
+                    }
+                    travellers={
+                      travellers
+                    }
+                    tripType={
+                      tripType
                     }
                   />
                 </div>

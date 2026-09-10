@@ -3,7 +3,18 @@ import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import Head from "next/head";
 
-import { AgencyProvider, useAgency } from "@/context/AgencyContext";
+import {
+  AgencyProvider,
+  useAgency,
+} from "@/context/AgencyContext";
+
+import {
+  EnquiryProvider,
+} from "@/components/enquiry/EnquiryProvider";
+
+import EnquiryModal from "@/components/enquiry/EnquiryModal";
+
+import FloatingContactButtons from "@/components/layout/FloatingContactButtons";
 
 const AgencyHead = () => {
   const { agency } = useAgency();
@@ -36,9 +47,15 @@ export default function App({
 }: AppProps) {
   return (
     <AgencyProvider>
-      <AgencyHead />
+      <EnquiryProvider>
+        <AgencyHead />
 
-      <Component {...pageProps} />
+        <Component {...pageProps} />
+
+        <FloatingContactButtons />
+
+        <EnquiryModal />
+      </EnquiryProvider>
     </AgencyProvider>
   );
 }

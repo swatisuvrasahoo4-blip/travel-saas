@@ -20,8 +20,16 @@ import {
   useAgency,
 } from "@/context/AgencyContext";
 
+import {
+  useEnquiry,
+} from "@/components/enquiry/EnquiryProvider";
+
 const Navbar = () => {
   const router = useRouter();
+
+  const {
+    openEnquiry,
+  } = useEnquiry();
 
   const {
     agency,
@@ -129,8 +137,11 @@ const Navbar = () => {
           .join(" ")
       : agency.name;
 
+  const primaryPhone =
+    agency.phones?.[0] || "";
+
   const phoneHref =
-    agency.phone.replace(
+    primaryPhone.replace(
       /[^0-9+]/g,
       ""
     );
@@ -139,7 +150,7 @@ const Navbar = () => {
     <>
       <header className="relative z-50 w-full bg-white md:fixed md:inset-x-0 md:top-0">
         {/* Mobile top bar */}
-        {agency.phone && (
+        {primaryPhone && (
           <div
             className="md:hidden"
             style={{
@@ -157,7 +168,7 @@ const Navbar = () => {
                 />
 
                 <span>
-                  {agency.phone}
+                  {primaryPhone}
                 </span>
               </a>
             </div>
@@ -187,7 +198,7 @@ const Navbar = () => {
             )}
 
             <div className="flex shrink-0 items-center gap-6">
-              {agency.phone && (
+              {primaryPhone && (
                 <a
                   href={`tel:${phoneHref}`}
                   className="flex items-center gap-2 text-xs font-medium text-white transition hover:opacity-80"
@@ -197,7 +208,7 @@ const Navbar = () => {
                   />
 
                   <span>
-                    {agency.phone}
+                    {primaryPhone}
                   </span>
                 </a>
               )}
@@ -335,8 +346,15 @@ const Navbar = () => {
                 }
               )}
 
-              <Link
-                href="/enquiry"
+              {/* Desktop Enquiry */}
+              <button
+                type="button"
+                onClick={() =>
+                  openEnquiry({
+                    source:
+                      "general",
+                  })
+                }
                 className="ml-2 rounded-xl px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:opacity-90"
                 style={{
                   backgroundColor:
@@ -344,7 +362,7 @@ const Navbar = () => {
                 }}
               >
                 Enquire Now
-              </Link>
+              </button>
             </nav>
 
             {/* Mobile / tablet menu button */}
@@ -432,13 +450,19 @@ const Navbar = () => {
                     }
                   )}
 
-                  <Link
-                    href="/enquiry"
-                    onClick={() =>
+                  {/* Mobile Enquiry */}
+                  <button
+                    type="button"
+                    onClick={() => {
                       setMenuOpen(
                         false
-                      )
-                    }
+                      );
+
+                      openEnquiry({
+                        source:
+                          "general",
+                      });
+                    }}
                     className="mt-2 flex items-center justify-center rounded-xl px-4 py-3 text-sm font-bold text-white"
                     style={{
                       backgroundColor:
@@ -446,7 +470,7 @@ const Navbar = () => {
                     }}
                   >
                     Enquire Now
-                  </Link>
+                  </button>
                 </div>
               </nav>
             </div>

@@ -3,20 +3,28 @@ import {
   Send,
 } from "lucide-react";
 
-import Link from "next/link";
-
 import {
   motion,
   useReducedMotion,
 } from "motion/react";
 
-import { useAgency } from "@/context/AgencyContext";
+import {
+  useAgency,
+} from "@/context/AgencyContext";
+
+import {
+  useEnquiry,
+} from "@/components/enquiry/EnquiryProvider";
 
 const ExploreCta = () => {
   const {
     agency,
     loading,
   } = useAgency();
+
+  const {
+    openEnquiry,
+  } = useEnquiry();
 
   const shouldReduceMotion =
     useReducedMotion();
@@ -29,8 +37,11 @@ const ExploreCta = () => {
     return null;
   }
 
+  const primaryPhone =
+    agency.phones?.[0] || "";
+
   const whatsappNumber =
-    agency.phone.replace(/\D/g, "");
+    primaryPhone.replace(/\D/g, "");
 
   return (
     <section
@@ -47,6 +58,7 @@ const ExploreCta = () => {
     >
       <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 md:grid-cols-[1fr_1.6fr_auto] md:items-center lg:px-8">
         {/* Left Text */}
+
         <motion.div
           className="text-center md:text-left"
           initial={
@@ -88,6 +100,7 @@ const ExploreCta = () => {
         </motion.div>
 
         {/* Center Text */}
+
         <motion.div
           className="text-center"
           initial={
@@ -136,6 +149,7 @@ const ExploreCta = () => {
         </motion.div>
 
         {/* Buttons */}
+
         <motion.div
           className="flex flex-col gap-3"
           initial={
@@ -172,6 +186,7 @@ const ExploreCta = () => {
           }}
         >
           {/* Enquire Button */}
+
           <motion.div
             whileHover={
               shouldReduceMotion
@@ -192,53 +207,62 @@ const ExploreCta = () => {
               duration: 0.2,
             }}
           >
-            <Link
-              href="/enquiry"
-              className="flex min-w-48 items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-bold text-white shadow-md transition-shadow hover:shadow-xl"
+            <button
+              type="button"
+              onClick={() =>
+                openEnquiry({
+                  source: "general",
+                })
+              }
+              className="flex w-full min-w-48 items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-bold text-white shadow-md transition-shadow hover:shadow-xl"
               style={{
                 backgroundColor:
                   agency.accentColor,
               }}
             >
               <Send size={18} />
+
               Enquire Now
-            </Link>
+            </button>
           </motion.div>
 
           {/* WhatsApp Button */}
-          <motion.div
-            whileHover={
-              shouldReduceMotion
-                ? undefined
-                : {
-                    y: -3,
-                    scale: 1.035,
-                  }
-            }
-            whileTap={
-              shouldReduceMotion
-                ? undefined
-                : {
-                    scale: 0.96,
-                  }
-            }
-            transition={{
-              duration: 0.2,
-            }}
-          >
-            <a
-              href={`https://wa.me/${whatsappNumber}`}
-              target="_blank"
-              rel="noreferrer"
-              className="flex min-w-48 items-center justify-center gap-2 rounded-xl bg-green-600 px-6 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:bg-green-700 hover:shadow-xl"
-            >
-              <MessageCircle
-                size={19}
-              />
 
-              Contact Us
-            </a>
-          </motion.div>
+          {whatsappNumber && (
+            <motion.div
+              whileHover={
+                shouldReduceMotion
+                  ? undefined
+                  : {
+                      y: -3,
+                      scale: 1.035,
+                    }
+              }
+              whileTap={
+                shouldReduceMotion
+                  ? undefined
+                  : {
+                      scale: 0.96,
+                    }
+              }
+              transition={{
+                duration: 0.2,
+              }}
+            >
+              <a
+                href={`https://wa.me/${whatsappNumber}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex min-w-48 items-center justify-center gap-2 rounded-xl bg-green-600 px-6 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:bg-green-700 hover:shadow-xl"
+              >
+                <MessageCircle
+                  size={19}
+                />
+
+                Contact Us
+              </a>
+            </motion.div>
+          )}
         </motion.div>
       </div>
     </section>

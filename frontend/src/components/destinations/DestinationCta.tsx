@@ -2,12 +2,14 @@ import {
   Send,
 } from "lucide-react";
 
-import Link from "next/link";
-
 import {
   motion,
   useReducedMotion,
 } from "motion/react";
+
+import {
+  useEnquiry,
+} from "@/components/enquiry/EnquiryProvider";
 
 import type {
   Destination,
@@ -23,6 +25,10 @@ const DestinationCta = ({
   const shouldReduceMotion =
     useReducedMotion();
 
+  const {
+    openEnquiry,
+  } = useEnquiry();
+
   if (!destination.ctaImage) {
     return null;
   }
@@ -35,12 +41,14 @@ const DestinationCta = ({
       }}
     >
       {/* Overlay */}
+
       <div className="absolute inset-0 bg-[#06364a]/70" />
 
       {/* Content */}
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-12 text-center sm:px-6 lg:px-8">
 
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-12 text-center sm:px-6 lg:px-8">
         {/* Heading */}
+
         <motion.h2
           initial={
             shouldReduceMotion
@@ -63,7 +71,6 @@ const DestinationCta = ({
               shouldReduceMotion
                 ? 0
                 : 1.1,
-
             ease: [
               0.22,
               1,
@@ -78,6 +85,7 @@ const DestinationCta = ({
         </motion.h2>
 
         {/* Description */}
+
         <motion.p
           initial={
             shouldReduceMotion
@@ -100,12 +108,10 @@ const DestinationCta = ({
               shouldReduceMotion
                 ? 0
                 : 1.1,
-
             delay:
               shouldReduceMotion
                 ? 0
                 : 0.22,
-
             ease: [
               0.22,
               1,
@@ -116,21 +122,30 @@ const DestinationCta = ({
           className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-white/90 sm:text-base"
         >
           Tell us your travel dates and
-          preferences, and we&apos;ll help
-          you plan a memorable journey.
+          preferences, and we&apos;ll
+          help you plan a memorable
+          journey.
         </motion.p>
 
-        {/* Enquire Button - No Motion Animation */}
+        {/* Enquire Button */}
+
         <div className="mt-6">
-          <Link
-            href={`/enquiry?destination=${encodeURIComponent(
-              destination.name
-            )}`}
+          <button
+            type="button"
+            onClick={() =>
+              openEnquiry({
+                source:
+                  "destination",
+                destination:
+                  destination.name,
+              })
+            }
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-7 py-3.5 text-sm font-bold text-white shadow-md transition-colors duration-200 hover:bg-orange-700"
           >
             <Send size={18} />
+
             Enquire Now
-          </Link>
+          </button>
         </div>
       </div>
     </section>

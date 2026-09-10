@@ -1,3 +1,5 @@
+import axios from "axios";
+
 export interface Review {
   _id: string;
   agencyId: string;
@@ -43,52 +45,48 @@ const getBackendUrl = () => {
   return BACKEND_URL;
 };
 
-export const getFeaturedReviews =
-  async (
-    hostname: string
-  ): Promise<Review[]> => {
-    const backendUrl =
-      getBackendUrl();
+/* =========================================
+   GET FEATURED REVIEWS
+========================================= */
 
-    const response = await fetch(
-      `${backendUrl}/review/featured?hostname=${encodeURIComponent(
-        hostname
-      )}`
+export const getFeaturedReviews = async (
+  hostname: string
+): Promise<Review[]> => {
+  const backendUrl =
+    getBackendUrl();
+
+  const response =
+    await axios.get<ReviewsResponse>(
+      `${backendUrl}/review/featured`,
+      {
+        params: {
+          hostname,
+        },
+      }
     );
 
-    if (!response.ok) {
-      throw new Error(
-        "Unable to load featured reviews"
-      );
-    }
+  return response.data.reviews;
+};
 
-    const data: ReviewsResponse =
-      await response.json();
+/* =========================================
+   GET ALL REVIEWS
+========================================= */
 
-    return data.reviews;
-  };
+export const getReviews = async (
+  hostname: string
+): Promise<Review[]> => {
+  const backendUrl =
+    getBackendUrl();
 
-export const getReviews =
-  async (
-    hostname: string
-  ): Promise<Review[]> => {
-    const backendUrl =
-      getBackendUrl();
-
-    const response = await fetch(
-      `${backendUrl}/review?hostname=${encodeURIComponent(
-        hostname
-      )}`
+  const response =
+    await axios.get<ReviewsResponse>(
+      `${backendUrl}/review`,
+      {
+        params: {
+          hostname,
+        },
+      }
     );
 
-    if (!response.ok) {
-      throw new Error(
-        "Unable to load reviews"
-      );
-    }
-
-    const data: ReviewsResponse =
-      await response.json();
-
-    return data.reviews;
-  };
+  return response.data.reviews;
+};
