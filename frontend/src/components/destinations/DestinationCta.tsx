@@ -1,7 +1,13 @@
 import {
   Send,
 } from "lucide-react";
+
 import Link from "next/link";
+
+import {
+  motion,
+  useReducedMotion,
+} from "motion/react";
 
 import type {
   Destination,
@@ -14,6 +20,9 @@ interface DestinationCtaProps {
 const DestinationCta = ({
   destination,
 }: DestinationCtaProps) => {
+  const shouldReduceMotion =
+    useReducedMotion();
+
   if (!destination.ctaImage) {
     return null;
   }
@@ -30,26 +39,99 @@ const DestinationCta = ({
 
       {/* Content */}
       <div className="relative z-10 mx-auto w-full max-w-7xl px-4 py-12 text-center sm:px-6 lg:px-8">
-        <h2 className="text-2xl font-bold text-white sm:text-3xl md:text-4xl">
+
+        {/* Heading */}
+        <motion.h2
+          initial={
+            shouldReduceMotion
+              ? false
+              : {
+                  opacity: 0,
+                  y: 30,
+                }
+          }
+          whileInView={{
+            opacity: 1,
+            y: 0,
+          }}
+          viewport={{
+            once: true,
+            amount: 0.4,
+          }}
+          transition={{
+            duration:
+              shouldReduceMotion
+                ? 0
+                : 1.1,
+
+            ease: [
+              0.22,
+              1,
+              0.36,
+              1,
+            ],
+          }}
+          className="text-2xl font-bold text-white sm:text-3xl md:text-4xl"
+        >
           Plan Your Trip to{" "}
           {destination.name}
-        </h2>
+        </motion.h2>
 
-        <p className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-white/90 sm:text-base">
+        {/* Description */}
+        <motion.p
+          initial={
+            shouldReduceMotion
+              ? false
+              : {
+                  opacity: 0,
+                  y: 22,
+                }
+          }
+          whileInView={{
+            opacity: 1,
+            y: 0,
+          }}
+          viewport={{
+            once: true,
+            amount: 0.4,
+          }}
+          transition={{
+            duration:
+              shouldReduceMotion
+                ? 0
+                : 1.1,
+
+            delay:
+              shouldReduceMotion
+                ? 0
+                : 0.22,
+
+            ease: [
+              0.22,
+              1,
+              0.36,
+              1,
+            ],
+          }}
+          className="mx-auto mt-4 max-w-2xl text-sm leading-6 text-white/90 sm:text-base"
+        >
           Tell us your travel dates and
           preferences, and we&apos;ll help
           you plan a memorable journey.
-        </p>
+        </motion.p>
 
-        <Link
-          href={`/enquiry?destination=${encodeURIComponent(
-            destination.name
-          )}`}
-          className="mt-6 inline-flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-7 py-3.5 text-sm font-bold text-white shadow-md transition hover:bg-orange-700"
-        >
-          <Send size={18} />
-          Enquire Now
-        </Link>
+        {/* Enquire Button - No Motion Animation */}
+        <div className="mt-6">
+          <Link
+            href={`/enquiry?destination=${encodeURIComponent(
+              destination.name
+            )}`}
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-600 px-7 py-3.5 text-sm font-bold text-white shadow-md transition-colors duration-200 hover:bg-orange-700"
+          >
+            <Send size={18} />
+            Enquire Now
+          </Link>
+        </div>
       </div>
     </section>
   );

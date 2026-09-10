@@ -15,13 +15,20 @@ import {
   Users,
   Waves,
 } from "lucide-react";
+
 import type {
   LucideIcon,
 } from "lucide-react";
+
 import {
   useEffect,
   useState,
 } from "react";
+
+import {
+  motion,
+  useReducedMotion,
+} from "motion/react";
 
 import {
   Agency,
@@ -77,8 +84,15 @@ const getDesktopGridClass = (
 };
 
 const TravelTypes = () => {
-  const [agency, setAgency] =
-    useState<Agency | null>(null);
+  const [
+    agency,
+    setAgency,
+  ] = useState<Agency | null>(
+    null
+  );
+
+  const shouldReduceMotion =
+    useReducedMotion();
 
   useEffect(() => {
     const loadAgency = async () => {
@@ -110,7 +124,9 @@ const TravelTypes = () => {
   const travelTypes =
     agency.travelTypes ?? [];
 
-  if (travelTypes.length === 0) {
+  if (
+    travelTypes.length === 0
+  ) {
     return null;
   }
 
@@ -126,16 +142,63 @@ const TravelTypes = () => {
       )
     );
 
+  const containerVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren:
+          shouldReduceMotion
+            ? 0
+            : 0.12,
+      },
+    },
+  };
+
+  const cardVariants = {
+    hidden: {
+      opacity: 0,
+      y: shouldReduceMotion
+        ? 0
+        : 28,
+    },
+
+    visible: {
+      opacity: 1,
+      y: 0,
+
+      transition: {
+        duration:
+          shouldReduceMotion
+            ? 0
+            : 0.55,
+
+        ease: [
+          0.22,
+          1,
+          0.36,
+          1,
+        ] as [
+          number,
+          number,
+          number,
+          number,
+        ],
+      },
+    },
+  };
+
   return (
     <section
       className="
         relative
+        hidden
         w-full
         overflow-hidden
         bg-[#fff8eb]
         bg-[length:100%_175%]
         bg-center
         bg-no-repeat
+        md:block
         md:bg-cover
       "
       style={{
@@ -143,8 +206,21 @@ const TravelTypes = () => {
       }}
     >
       <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 md:py-9 lg:px-8">
-        <div
+        <motion.div
           className={`grid grid-cols-2 gap-x-4 gap-y-10 ${desktopGridClass} md:gap-4`}
+          variants={
+            containerVariants
+          }
+          initial={
+            shouldReduceMotion
+              ? false
+              : "hidden"
+          }
+          whileInView="visible"
+          viewport={{
+            once: true,
+            amount: 0.25,
+          }}
         >
           {travelTypes.map(
             (item, index) => {
@@ -154,11 +230,37 @@ const TravelTypes = () => {
                 ] || Compass;
 
               return (
-                <div
+                <motion.div
                   key={`${item.title}-${index}`}
+                  variants={
+                    cardVariants
+                  }
+                  whileHover={
+                    shouldReduceMotion
+                      ? undefined
+                      : {
+                          y: -6,
+                        }
+                  }
+                  transition={{
+                    duration: 0.25,
+                  }}
                   className="flex min-w-0 flex-col items-center text-center"
                 >
-                  <div className="flex size-16 items-center justify-center rounded-full bg-orange-100/80 sm:size-18">
+                  <motion.div
+                    className="flex size-16 items-center justify-center rounded-full bg-orange-100/80 sm:size-18"
+                    whileHover={
+                      shouldReduceMotion
+                        ? undefined
+                        : {
+                            scale: 1.08,
+                          }
+                    }
+                    transition={{
+                      duration:
+                        0.25,
+                    }}
+                  >
                     <Icon
                       size={30}
                       strokeWidth={2}
@@ -167,7 +269,7 @@ const TravelTypes = () => {
                           agency.accentColor,
                       }}
                     />
-                  </div>
+                  </motion.div>
 
                   <h3
                     className="mt-3 text-base font-bold leading-tight sm:text-lg"
@@ -181,14 +283,16 @@ const TravelTypes = () => {
 
                   {item.subtitle && (
                     <p className="mt-1.5 text-xs leading-5 text-gray-600 sm:text-sm">
-                      {item.subtitle}
+                      {
+                        item.subtitle
+                      }
                     </p>
                   )}
-                </div>
+                </motion.div>
               );
             }
           )}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

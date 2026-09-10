@@ -3,11 +3,18 @@ import {
   Clock3,
   MapPin,
 } from "lucide-react";
+
 import Link from "next/link";
+
 import {
   useEffect,
   useState,
 } from "react";
+
+import {
+  motion,
+  useReducedMotion,
+} from "motion/react";
 
 import {
   getFeaturedPackages,
@@ -17,6 +24,9 @@ import {
 const TourPackages = () => {
   const [packages, setPackages] =
     useState<TourPackage[]>([]);
+
+  const shouldReduceMotion =
+    useReducedMotion();
 
   useEffect(() => {
     let isCancelled = false;
@@ -58,37 +68,205 @@ const TourPackages = () => {
       <div className="mx-auto max-w-[1700px] px-3 sm:px-4 lg:px-5">
         {/* Section Header */}
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
+          <motion.div
+            initial={
+              shouldReduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    y: 24,
+                  }
+            }
+            whileInView={{
+              opacity: 1,
+              y: 0,
+            }}
+            viewport={{
+              once: true,
+              amount: 0.4,
+            }}
+            transition={{
+              duration:
+                shouldReduceMotion
+                  ? 0
+                  : 0.7,
+              ease: [
+                0.22,
+                1,
+                0.36,
+                1,
+              ],
+            }}
+          >
             <h2 className="text-3xl font-bold text-[#06364a] md:text-4xl">
               Our Tour Packages
             </h2>
 
-            <div className="mt-2 h-1 w-16 rounded-full bg-[#ea580c]" />
+            <motion.div
+              className="mt-2 h-1 w-16 rounded-full bg-[#ea580c]"
+              initial={
+                shouldReduceMotion
+                  ? false
+                  : {
+                      scaleX: 0,
+                      opacity: 0,
+                    }
+              }
+              whileInView={{
+                scaleX: 1,
+                opacity: 1,
+              }}
+              viewport={{
+                once: true,
+              }}
+              transition={{
+                duration:
+                  shouldReduceMotion
+                    ? 0
+                    : 0.55,
+
+                delay:
+                  shouldReduceMotion
+                    ? 0
+                    : 0.15,
+
+                ease: [
+                  0.22,
+                  1,
+                  0.36,
+                  1,
+                ],
+              }}
+              style={{
+                transformOrigin: "left",
+              }}
+            />
 
             <p className="mt-3 max-w-2xl text-sm leading-7 text-gray-600 md:text-base">
               Handpicked itineraries
               to help you explore the
               best of Odisha.
             </p>
-          </div>
+          </motion.div>
 
-          <Link
-            href="/packages"
-            className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-[#06364a] transition hover:text-[#ea580c]"
+          <motion.div
+            initial={
+              shouldReduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    x: 24,
+                  }
+            }
+            whileInView={{
+              opacity: 1,
+              x: 0,
+            }}
+            viewport={{
+              once: true,
+              amount: 0.5,
+            }}
+            transition={{
+              duration:
+                shouldReduceMotion
+                  ? 0
+                  : 0.65,
+
+              delay:
+                shouldReduceMotion
+                  ? 0
+                  : 0.15,
+
+              ease: [
+                0.22,
+                1,
+                0.36,
+                1,
+              ],
+            }}
           >
-            View All Packages
+            <Link
+              href="/packages"
+              className="group inline-flex w-fit items-center gap-2 text-sm font-semibold text-[#06364a] transition hover:text-[#ea580c]"
+            >
+              View All Packages
 
-            <ArrowRight size={18} />
-          </Link>
+              <motion.span
+                className="inline-flex"
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : {
+                        x: 4,
+                      }
+                }
+                transition={{
+                  duration: 0.2,
+                }}
+              >
+                <ArrowRight
+                  size={18}
+                />
+              </motion.span>
+            </Link>
+          </motion.div>
         </div>
 
-        {/* 5 Card Row */}
+        {/* Package Cards */}
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {packages.map(
-            (tourPackage) => (
-              <article
-                key={tourPackage._id}
-                className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg"
+            (
+              tourPackage,
+              index
+            ) => (
+              <motion.article
+                key={
+                  tourPackage._id
+                }
+                initial={
+                  shouldReduceMotion
+                    ? false
+                    : {
+                        opacity: 0,
+                        y: 34,
+                      }
+                }
+                whileInView={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                viewport={{
+                  once: true,
+                  amount: 0.22,
+                }}
+                transition={{
+                  duration:
+                    shouldReduceMotion
+                      ? 0
+                      : 0.78,
+
+                  delay:
+                    shouldReduceMotion
+                      ? 0
+                      : index *
+                        0.13,
+
+                  ease: [
+                    0.22,
+                    1,
+                    0.36,
+                    1,
+                  ],
+                }}
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : {
+                        y: -7,
+                        scale: 1.012,
+                      }
+                }
+                className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow duration-300 hover:shadow-lg"
               >
                 {/* Image */}
                 <Link
@@ -96,14 +274,25 @@ const TourPackages = () => {
                   className="block"
                 >
                   <div className="relative h-40 overflow-hidden">
-                    <img
+                    <motion.img
                       src={
                         tourPackage.cardImage
                       }
                       alt={
                         tourPackage.name
                       }
-                      className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                      className="h-full w-full object-cover"
+                      whileHover={
+                        shouldReduceMotion
+                          ? undefined
+                          : {
+                              scale: 1.07,
+                            }
+                      }
+                      transition={{
+                        duration: 0.6,
+                        ease: "easeOut",
+                      }}
                     />
 
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
@@ -143,8 +332,7 @@ const TourPackages = () => {
                       />
 
                       <span className="line-clamp-2">
-                        {tourPackage
-                          .destinations
+                        {tourPackage.destinations
                           .map(
                             (
                               destination
@@ -157,35 +345,106 @@ const TourPackages = () => {
                   </div>
 
                   {/* Bottom Actions */}
-<div className="mt-auto pt-4">
-  <div className="flex items-center justify-between gap-1.5 border-t border-gray-100 pt-3">
-    <Link
-      href={`/packages/${tourPackage.slug}`}
-      className="whitespace-nowrap text-xs font-semibold text-[#06364a] transition hover:text-[#ea580c]"
-    >
-      View Details
-    </Link>
+                  <div className="mt-auto pt-4">
+                    <div className="flex items-center justify-between gap-1.5 border-t border-gray-100 pt-3">
+                      <Link
+                        href={`/packages/${tourPackage.slug}`}
+                        className="whitespace-nowrap text-xs font-semibold text-[#06364a] transition hover:text-[#ea580c]"
+                      >
+                        View Details
+                      </Link>
 
-    <Link
-      href={`/enquiry?package=${encodeURIComponent(
-        tourPackage.slug
-      )}`}
-      className="inline-flex items-center gap-1 whitespace-nowrap rounded-lg bg-[#ea580c] px-2.5 py-2 text-xs font-semibold text-white transition hover:opacity-90"
-    >
-      Enquire Now
+                      <motion.div
+                        whileHover={
+                          shouldReduceMotion
+                            ? undefined
+                            : {
+                                scale:
+                                  1.04,
+                                y: -1,
+                              }
+                        }
+                        whileTap={
+                          shouldReduceMotion
+                            ? undefined
+                            : {
+                                scale:
+                                  0.97,
+                              }
+                        }
+                        transition={{
+                          duration:
+                            0.2,
+                        }}
+                      >
+                        <Link
+                          href={`/enquiry?package=${encodeURIComponent(
+                            tourPackage.slug
+                          )}`}
+                          className="inline-flex items-center gap-1 whitespace-nowrap rounded-lg bg-[#ea580c] px-2.5 py-2 text-xs font-semibold text-white transition hover:opacity-90"
+                        >
+                          Enquire Now
 
-      <ArrowRight size={13} />
-    </Link>
-  </div>
-</div>
+                          <ArrowRight
+                            size={13}
+                          />
+                        </Link>
+                      </motion.div>
+                    </div>
+                  </div>
                 </div>
-              </article>
+              </motion.article>
             )
           )}
 
           {/* Custom Tour Plan Card */}
-          <article
-            className="relative flex min-h-[390px] overflow-hidden rounded-2xl border border-orange-100 bg-cover bg-center shadow-sm"
+          <motion.article
+            initial={
+              shouldReduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    x: 34,
+                    y: 20,
+                  }
+            }
+            whileInView={{
+              opacity: 1,
+              x: 0,
+              y: 0,
+            }}
+            viewport={{
+              once: true,
+              amount: 0.22,
+            }}
+            transition={{
+              duration:
+                shouldReduceMotion
+                  ? 0
+                  : 0.85,
+
+              delay:
+                shouldReduceMotion
+                  ? 0
+                  : packages.length *
+                    0.13,
+
+              ease: [
+                0.22,
+                1,
+                0.36,
+                1,
+              ],
+            }}
+            whileHover={
+              shouldReduceMotion
+                ? undefined
+                : {
+                    y: -7,
+                    scale: 1.012,
+                  }
+            }
+            className="relative flex min-h-[390px] overflow-hidden rounded-2xl border border-orange-100 bg-cover bg-center shadow-sm transition-shadow duration-300 hover:shadow-lg"
             style={{
               backgroundImage:
                 "url('/images/packages/custom-tour-bg.png')",
@@ -208,18 +467,40 @@ const TourPackages = () => {
                 for you.
               </p>
 
-              <Link
-                href="/plan-my-trip"
-                className="mt-7 inline-flex w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-[#f59e0b] px-5 py-3 text-sm font-bold text-[#06364a] transition hover:bg-[#ea8c00]"
+              <motion.div
+                className="mt-7 w-fit"
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : {
+                        y: -2,
+                        scale: 1.035,
+                      }
+                }
+                whileTap={
+                  shouldReduceMotion
+                    ? undefined
+                    : {
+                        scale: 0.97,
+                      }
+                }
+                transition={{
+                  duration: 0.2,
+                }}
               >
-                Plan My Trip
+                <Link
+                  href="/plan-my-trip"
+                  className="inline-flex w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-[#f59e0b] px-5 py-3 text-sm font-bold text-[#06364a] transition hover:bg-[#ea8c00]"
+                >
+                  Plan My Trip
 
-                <ArrowRight
-                  size={17}
-                />
-              </Link>
+                  <ArrowRight
+                    size={17}
+                  />
+                </Link>
+              </motion.div>
             </div>
-          </article>
+          </motion.article>
         </div>
       </div>
     </section>

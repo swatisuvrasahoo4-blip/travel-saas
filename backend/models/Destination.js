@@ -61,6 +61,12 @@ const destinationSchema =
         trim: true,
       },
 
+      cardImage: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
       description: {
         type: String,
         default: "",

@@ -5,33 +5,42 @@ import {
   Phone,
   X,
 } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useState } from "react";
 
-import { useAgency } from "@/context/AgencyContext";
+import Link from "next/link";
+
+import {
+  useRouter,
+} from "next/router";
+
+import {
+  useState,
+} from "react";
+
+import {
+  useAgency,
+} from "@/context/AgencyContext";
 
 const Navbar = () => {
   const router = useRouter();
 
-  const { agency, loading } =
-    useAgency();
+  const {
+    agency,
+    loading,
+  } = useAgency();
 
-  const [menuOpen, setMenuOpen] =
-    useState(false);
+  const [
+    menuOpen,
+    setMenuOpen,
+  ] = useState(false);
 
   if (loading) {
     return (
       <>
         <header className="relative z-50 w-full bg-white md:fixed md:inset-x-0 md:top-0">
-          <div className="flex min-h-20 items-center justify-center">
-            <p className="text-sm text-gray-500">
-              Loading...
-            </p>
-          </div>
+          <div className="min-h-18" />
         </header>
 
-        <div className="hidden h-20 md:block" />
+        <div className="hidden h-28 md:block" />
       </>
     );
   }
@@ -86,7 +95,8 @@ const Navbar = () => {
   const isActiveRoute = (
     href: string
   ) => {
-    const pathname = router.pathname;
+    const pathname =
+      router.pathname;
 
     if (href === "/") {
       return pathname === "/";
@@ -101,7 +111,9 @@ const Navbar = () => {
   };
 
   const nameParts =
-    agency.name.trim().split(/\s+/);
+    agency.name
+      .trim()
+      .split(/\s+/);
 
   const lastWord =
     nameParts.length > 1
@@ -140,7 +152,9 @@ const Navbar = () => {
                 href={`tel:${phoneHref}`}
                 className="flex items-center gap-2 text-xs font-semibold text-white transition hover:opacity-80"
               >
-                <Phone size={13} />
+                <Phone
+                  size={13}
+                />
 
                 <span>
                   {agency.phone}
@@ -178,7 +192,9 @@ const Navbar = () => {
                   href={`tel:${phoneHref}`}
                   className="flex items-center gap-2 text-xs font-medium text-white transition hover:opacity-80"
                 >
-                  <Phone size={14} />
+                  <Phone
+                    size={14}
+                  />
 
                   <span>
                     {agency.phone}
@@ -191,7 +207,9 @@ const Navbar = () => {
                   href={`mailto:${agency.email}`}
                   className="flex items-center gap-2 text-xs font-medium text-white transition hover:opacity-80"
                 >
-                  <Mail size={14} />
+                  <Mail
+                    size={14}
+                  />
 
                   <span>
                     {agency.email}
@@ -248,7 +266,7 @@ const Navbar = () => {
 
                 {agency.tagline && (
                   <p
-                    className="mt-0.5 hidden text-[9px] font-semibold tracking-[0.12em] uppercase sm:block"
+                    className="mt-0.5 hidden text-[9px] font-semibold uppercase tracking-[0.12em] sm:block"
                     style={{
                       color:
                         agency.primaryColor,
@@ -272,13 +290,16 @@ const Navbar = () => {
                   return (
                     <Link
                       key={item.href}
-                      href={item.href}
+                      href={
+                        item.href
+                      }
                       className="relative px-3 py-2 text-sm font-semibold text-gray-700 transition"
                       style={{
-                        color: isActive
-                          ? agency
-                              .accentColor
-                          : undefined,
+                        color:
+                          isActive
+                            ? agency
+                                .accentColor
+                            : undefined,
                       }}
                       onMouseEnter={(
                         event
@@ -296,7 +317,9 @@ const Navbar = () => {
                             : "";
                       }}
                     >
-                      {item.label}
+                      {
+                        item.label
+                      }
 
                       {isActive && (
                         <span
@@ -329,7 +352,9 @@ const Navbar = () => {
               type="button"
               onClick={() =>
                 setMenuOpen(
-                  (previous) =>
+                  (
+                    previous
+                  ) =>
                     !previous
                 )
               }
@@ -344,9 +369,13 @@ const Navbar = () => {
               }
             >
               {menuOpen ? (
-                <X size={22} />
+                <X
+                  size={22}
+                />
               ) : (
-                <Menu size={22} />
+                <Menu
+                  size={22}
+                />
               )}
             </button>
           </div>
@@ -406,7 +435,9 @@ const Navbar = () => {
                   <Link
                     href="/enquiry"
                     onClick={() =>
-                      setMenuOpen(false)
+                      setMenuOpen(
+                        false
+                      )
                     }
                     className="mt-2 flex items-center justify-center rounded-xl px-4 py-3 text-sm font-bold text-white"
                     style={{

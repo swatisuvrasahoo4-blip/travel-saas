@@ -8,11 +8,13 @@ const travelTypeSchema =
         required: true,
         trim: true,
       },
+
       subtitle: {
         type: String,
         default: "",
         trim: true,
       },
+
       icon: {
         type: String,
         required: true,
@@ -33,17 +35,20 @@ const featuredDestinationSchema =
         required: true,
         trim: true,
       },
+
       slug: {
         type: String,
         required: true,
         trim: true,
         lowercase: true,
       },
+
       subtitle: {
         type: String,
         default: "",
         trim: true,
       },
+
       image: {
         type: String,
         required: true,
@@ -54,6 +59,297 @@ const featuredDestinationSchema =
       _id: false,
     }
   );
+
+/* =========================================
+   ABOUT HERO
+========================================= */
+
+const aboutHeroSchema =
+  new mongoose.Schema(
+    {
+      label: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      title: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      description: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      image: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+    },
+    {
+      _id: false,
+    }
+  );
+
+/* =========================================
+   ABOUT STORY
+========================================= */
+
+const aboutStorySchema =
+  new mongoose.Schema(
+    {
+      label: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      title: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      paragraphs: {
+        type: [String],
+        default: [],
+      },
+
+      image: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+    },
+    {
+      _id: false,
+    }
+  );
+
+/* =========================================
+   ABOUT REASON
+========================================= */
+
+const aboutReasonSchema =
+  new mongoose.Schema(
+    {
+      icon: {
+        type: String,
+        default: "",
+        trim: true,
+        lowercase: true,
+      },
+
+      title: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      description: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+    },
+    {
+      _id: false,
+    }
+  );
+
+/* =========================================
+   ABOUT STAT
+========================================= */
+
+const aboutStatSchema =
+  new mongoose.Schema(
+    {
+      value: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      label: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+    },
+    {
+      _id: false,
+    }
+  );
+
+/* =========================================
+   MISSION / VISION
+========================================= */
+
+const aboutMissionVisionSchema =
+  new mongoose.Schema(
+    {
+      heading: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      description: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+    },
+    {
+      _id: false,
+    }
+  );
+
+/* =========================================
+   ABOUT CTA
+========================================= */
+
+const aboutCtaSchema =
+  new mongoose.Schema(
+    {
+      label: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      title: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      description: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      buttonText: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      buttonLink: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      image: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+    },
+    {
+      _id: false,
+    }
+  );
+
+/* =========================================
+   ABOUT PAGE
+========================================= */
+
+const aboutSchema =
+  new mongoose.Schema(
+    {
+      hero: {
+        type: aboutHeroSchema,
+        default: () => ({}),
+      },
+
+      story: {
+        type: aboutStorySchema,
+        default: () => ({}),
+      },
+
+      reasonsLabel: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      reasonsHeading: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      reasonsDescription: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      reasons: {
+        type: [aboutReasonSchema],
+        default: [],
+      },
+
+      statsBackgroundImage: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      stats: {
+        type: [aboutStatSchema],
+        default: [],
+      },
+
+      missionVisionLabel: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      missionVisionTitle: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      missionVisionDescription: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      mission: {
+        type: aboutMissionVisionSchema,
+        default: () => ({}),
+      },
+
+      vision: {
+        type: aboutMissionVisionSchema,
+        default: () => ({}),
+      },
+
+      cta: {
+        type: aboutCtaSchema,
+        default: () => ({}),
+      },
+    },
+    {
+      _id: false,
+    }
+  );
+
+/* =========================================
+   AGENCY
+========================================= */
 
 const agencySchema =
   new mongoose.Schema(
@@ -151,6 +447,11 @@ const agencySchema =
           type: [String],
           default: [],
         },
+      },
+
+      about: {
+        type: aboutSchema,
+        default: () => ({}),
       },
 
       primaryColor: {

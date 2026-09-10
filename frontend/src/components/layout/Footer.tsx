@@ -3,45 +3,24 @@ import {
   MapPin,
   Phone,
 } from "lucide-react";
+
 import Link from "next/link";
-import {
-  useEffect,
-  useState,
-} from "react";
 
 import {
-  Agency,
-  getAgencyByDomain,
-} from "@/services/agencyService";
+  motion,
+  useReducedMotion,
+} from "motion/react";
+
+import { useAgency } from "@/context/AgencyContext";
 
 const Footer = () => {
-  const [agency, setAgency] =
-    useState<Agency | null>(null);
+  const { agency, loading } =
+    useAgency();
 
-  useEffect(() => {
-    const loadAgency = async () => {
-      try {
-        const hostname =
-          window.location.hostname;
+  const shouldReduceMotion =
+    useReducedMotion();
 
-        const agencyData =
-          await getAgencyByDomain(
-            hostname
-          );
-
-        setAgency(agencyData);
-      } catch (error) {
-        console.error(
-          "Unable to load footer agency:",
-          error
-        );
-      }
-    };
-
-    loadAgency();
-  }, []);
-
-  if (!agency) {
+  if (loading || !agency) {
     return null;
   }
 
@@ -83,7 +62,7 @@ const Footer = () => {
 
   return (
     <footer
-      className="text-white"
+      className="overflow-hidden text-white"
       style={{
         backgroundColor:
           agency.primaryColor,
@@ -94,19 +73,60 @@ const Footer = () => {
       ====================================================== */}
       <section className="border-b border-white/15">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-9 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.05fr_1.1fr_1.1fr_0.8fr] lg:px-8">
+
           {/* =================================================
               BRAND
           ================================================== */}
-          <div className="text-center md:text-left">
+          <motion.div
+            className="text-center md:text-left"
+            initial={
+              shouldReduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    x: -35,
+                  }
+            }
+            whileInView={{
+              opacity: 1,
+              x: 0,
+            }}
+            viewport={{
+              once: true,
+              amount: 0.3,
+            }}
+            transition={{
+              duration:
+                shouldReduceMotion
+                  ? 0
+                  : 1.1,
+              ease: [
+                0.22,
+                1,
+                0.36,
+                1,
+              ],
+            }}
+          >
             <Link
               href="/"
               className="inline-block"
             >
               {agency.logo ? (
-                <img
+                <motion.img
                   src={agency.logo}
                   alt={`${agency.name} logo`}
                   className="mx-auto max-h-20 max-w-56 object-contain md:mx-0"
+                  whileHover={
+                    shouldReduceMotion
+                      ? undefined
+                      : {
+                          scale: 1.03,
+                        }
+                  }
+                  transition={{
+                    duration: 0.25,
+                  }}
                 />
               ) : (
                 <div>
@@ -120,42 +140,172 @@ const Footer = () => {
                 </div>
               )}
             </Link>
-          </div>
+          </motion.div>
 
           {/* =================================================
               QUICK LINKS
           ================================================== */}
-          <div className="border-t border-white/15 pt-6 md:border-t-0 md:pt-0 lg:border-l lg:pl-8">
+          <motion.div
+            className="border-t border-white/15 pt-6 md:border-t-0 md:pt-0 lg:border-l lg:pl-8"
+            initial={
+              shouldReduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    y: 28,
+                  }
+            }
+            whileInView={{
+              opacity: 1,
+              y: 0,
+            }}
+            viewport={{
+              once: true,
+              amount: 0.3,
+            }}
+            transition={{
+              duration:
+                shouldReduceMotion
+                  ? 0
+                  : 1.1,
+
+              delay:
+                shouldReduceMotion
+                  ? 0
+                  : 0.18,
+
+              ease: [
+                0.22,
+                1,
+                0.36,
+                1,
+              ],
+            }}
+          >
             <h3 className="mb-4 text-lg font-bold text-white">
               Quick Links
             </h3>
 
             <div className="grid grid-cols-2 gap-x-6 gap-y-3">
               {quickLinks.map(
-                (item) => (
-                  <Link
+                (item, index) => (
+                  <motion.div
                     key={item.href}
-                    href={item.href}
-                    className="text-sm text-white/85 transition hover:text-white"
+                    initial={
+                      shouldReduceMotion
+                        ? false
+                        : {
+                            opacity: 0,
+                            y: 8,
+                          }
+                    }
+                    whileInView={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    viewport={{
+                      once: true,
+                    }}
+                    transition={{
+                      duration:
+                        shouldReduceMotion
+                          ? 0
+                          : 0.6,
+
+                      delay:
+                        shouldReduceMotion
+                          ? 0
+                          : 0.35 +
+                            index *
+                              0.06,
+                    }}
                   >
-                    {item.label}
-                  </Link>
+                    <Link
+                      href={item.href}
+                      className="inline-block text-sm text-white/85 transition-colors hover:text-white"
+                    >
+                      <motion.span
+                        className="inline-block"
+                        whileHover={
+                          shouldReduceMotion
+                            ? undefined
+                            : {
+                                x: 4,
+                              }
+                        }
+                        transition={{
+                          duration:
+                            0.2,
+                        }}
+                      >
+                        {item.label}
+                      </motion.span>
+                    </Link>
+                  </motion.div>
                 )
               )}
             </div>
-          </div>
+          </motion.div>
 
           {/* =================================================
               CONTACT INFO
           ================================================== */}
-          <div className="border-t border-white/15 pt-6 md:border-t-0 md:pt-0 lg:border-l lg:pl-8">
+          <motion.div
+            className="border-t border-white/15 pt-6 md:border-t-0 md:pt-0 lg:border-l lg:pl-8"
+            initial={
+              shouldReduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    y: 28,
+                  }
+            }
+            whileInView={{
+              opacity: 1,
+              y: 0,
+            }}
+            viewport={{
+              once: true,
+              amount: 0.3,
+            }}
+            transition={{
+              duration:
+                shouldReduceMotion
+                  ? 0
+                  : 1.1,
+
+              delay:
+                shouldReduceMotion
+                  ? 0
+                  : 0.32,
+
+              ease: [
+                0.22,
+                1,
+                0.36,
+                1,
+              ],
+            }}
+          >
             <h3 className="mb-4 text-lg font-bold text-white">
               Contact Info
             </h3>
 
             <div className="space-y-4">
               {agency.address && (
-                <div className="flex items-start gap-3">
+                <motion.div
+                  className="flex items-start gap-3"
+                  whileHover={
+                    shouldReduceMotion
+                      ? undefined
+                      : {
+                          x: 3,
+                        }
+                  }
+                  transition={{
+                    duration: 0.2,
+                  }}
+                >
                   <MapPin
                     size={18}
                     className="mt-0.5 shrink-0"
@@ -164,13 +314,23 @@ const Footer = () => {
                   <span className="text-sm leading-6 text-white/85">
                     {agency.address}
                   </span>
-                </div>
+                </motion.div>
               )}
 
               {agency.phone && (
-                <a
+                <motion.a
                   href={`tel:${phoneHref}`}
-                  className="flex items-center gap-3 text-sm text-white/85 transition hover:text-white"
+                  className="flex items-center gap-3 text-sm text-white/85 transition-colors hover:text-white"
+                  whileHover={
+                    shouldReduceMotion
+                      ? undefined
+                      : {
+                          x: 3,
+                        }
+                  }
+                  transition={{
+                    duration: 0.2,
+                  }}
                 >
                   <Phone
                     size={18}
@@ -178,13 +338,23 @@ const Footer = () => {
                   />
 
                   {agency.phone}
-                </a>
+                </motion.a>
               )}
 
               {agency.email && (
-                <a
+                <motion.a
                   href={`mailto:${agency.email}`}
-                  className="flex items-center gap-3 text-sm text-white/85 transition hover:text-white"
+                  className="flex items-center gap-3 text-sm text-white/85 transition-colors hover:text-white"
+                  whileHover={
+                    shouldReduceMotion
+                      ? undefined
+                      : {
+                          x: 3,
+                        }
+                  }
+                  transition={{
+                    duration: 0.2,
+                  }}
                 >
                   <Mail
                     size={18}
@@ -192,15 +362,51 @@ const Footer = () => {
                   />
 
                   {agency.email}
-                </a>
+                </motion.a>
               )}
             </div>
-          </div>
+          </motion.div>
 
           {/* =================================================
               TAGLINE AREA
           ================================================== */}
-          <div className="border-t border-white/15 pt-6 text-center md:text-left lg:border-t-0 lg:border-l lg:pl-8">
+          <motion.div
+            className="border-t border-white/15 pt-6 text-center md:text-left lg:border-t-0 lg:border-l lg:pl-8"
+            initial={
+              shouldReduceMotion
+                ? false
+                : {
+                    opacity: 0,
+                    x: 35,
+                  }
+            }
+            whileInView={{
+              opacity: 1,
+              x: 0,
+            }}
+            viewport={{
+              once: true,
+              amount: 0.3,
+            }}
+            transition={{
+              duration:
+                shouldReduceMotion
+                  ? 0
+                  : 1.1,
+
+              delay:
+                shouldReduceMotion
+                  ? 0
+                  : 0.45,
+
+              ease: [
+                0.22,
+                1,
+                0.36,
+                1,
+              ],
+            }}
+          >
             <p className="text-xl leading-8 font-semibold italic text-white">
               Travel
               <br />
@@ -209,14 +415,50 @@ const Footer = () => {
               Experience Odisha
             </p>
 
-            <div
+            <motion.div
               className="mx-auto mt-4 h-1 w-20 rounded-full md:mx-0"
               style={{
                 backgroundColor:
                   agency.accentColor,
+
+                transformOrigin:
+                  "left",
+              }}
+              initial={
+                shouldReduceMotion
+                  ? false
+                  : {
+                      scaleX: 0,
+                      opacity: 0,
+                    }
+              }
+              whileInView={{
+                scaleX: 1,
+                opacity: 1,
+              }}
+              viewport={{
+                once: true,
+              }}
+              transition={{
+                duration:
+                  shouldReduceMotion
+                    ? 0
+                    : 0.9,
+
+                delay:
+                  shouldReduceMotion
+                    ? 0
+                    : 0.75,
+
+                ease: [
+                  0.22,
+                  1,
+                  0.36,
+                  1,
+                ],
               }}
             />
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -224,7 +466,43 @@ const Footer = () => {
           COPYRIGHT
       ====================================================== */}
       <section>
-        <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-5 text-center text-xs text-white/75 sm:px-6 md:flex-row md:items-center md:justify-between md:text-left lg:px-8">
+        <motion.div
+          className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-5 text-center text-xs text-white/75 sm:px-6 md:flex-row md:items-center md:justify-between md:text-left lg:px-8"
+          initial={
+            shouldReduceMotion
+              ? false
+              : {
+                  opacity: 0,
+                  y: 12,
+                }
+          }
+          whileInView={{
+            opacity: 1,
+            y: 0,
+          }}
+          viewport={{
+            once: true,
+            amount: 0.5,
+          }}
+          transition={{
+            duration:
+              shouldReduceMotion
+                ? 0
+                : 1,
+
+            delay:
+              shouldReduceMotion
+                ? 0
+                : 0.25,
+
+            ease: [
+              0.22,
+              1,
+              0.36,
+              1,
+            ],
+          }}
+        >
           <p>
             © {currentYear}{" "}
             {agency.name}. All Rights
@@ -238,7 +516,7 @@ const Footer = () => {
             </span>{" "}
             for Odisha
           </p>
-        </div>
+        </motion.div>
       </section>
     </footer>
   );

@@ -9,10 +9,16 @@ import {
 
 import Link from "next/link";
 import { useRouter } from "next/router";
+
 import {
   useEffect,
   useState,
 } from "react";
+
+import {
+  motion,
+  useReducedMotion,
+} from "motion/react";
 
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
@@ -34,6 +40,9 @@ const PackageDetailPage = () => {
 
   const [error, setError] =
     useState("");
+
+  const shouldReduceMotion =
+    useReducedMotion();
 
   useEffect(() => {
     if (!router.isReady) {
@@ -128,12 +137,17 @@ const PackageDetailPage = () => {
     );
   }
 
+  const hasMultipleDays =
+    tourPackage.itinerary.length > 1;
+
   return (
     <>
       <Navbar />
 
-      <main className="bg-white">
-        {/* Hero */}
+      <main className="overflow-hidden bg-white">
+        {/* =====================================================
+            HERO
+        ====================================================== */}
         <section
           className="relative min-h-[420px] bg-cover bg-[center_30%] md:min-h-[430px]"
           style={{
@@ -144,42 +158,176 @@ const PackageDetailPage = () => {
 
           <div className="relative z-10 mx-auto flex min-h-[420px] max-w-[1700px] items-center px-4 py-12 sm:px-6 md:min-h-[430px] lg:px-8">
             <div className="max-w-3xl text-white">
-              <p className="text-xs font-medium uppercase tracking-wide text-[#4bc4ef] md:text-sm">
+              <motion.p
+                initial={
+                  shouldReduceMotion
+                    ? false
+                    : {
+                        opacity: 0,
+                        y: 20,
+                      }
+                }
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                transition={{
+                  duration:
+                    shouldReduceMotion
+                      ? 0
+                      : 0.9,
+                  ease: [
+                    0.22,
+                    1,
+                    0.36,
+                    1,
+                  ],
+                }}
+                className="text-xs font-medium uppercase tracking-wide text-[#4bc4ef] md:text-sm"
+              >
                 Odisha Tour Package
-              </p>
+              </motion.p>
 
-              <h1 className="mt-4 font-serif text-4xl font-bold leading-tight md:text-5xl lg:text-6xl">
+              <motion.h1
+                initial={
+                  shouldReduceMotion
+                    ? false
+                    : {
+                        opacity: 0,
+                        y: 35,
+                      }
+                }
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                transition={{
+                  duration:
+                    shouldReduceMotion
+                      ? 0
+                      : 1.1,
+
+                  delay:
+                    shouldReduceMotion
+                      ? 0
+                      : 0.12,
+
+                  ease: [
+                    0.22,
+                    1,
+                    0.36,
+                    1,
+                  ],
+                }}
+                className="mt-4 font-serif text-4xl font-bold leading-tight md:text-5xl lg:text-6xl"
+              >
                 {tourPackage.name}
-              </h1>
+              </motion.h1>
 
-              <p className="mt-2 font-serif text-2xl font-bold md:text-3xl">
+              <motion.p
+                initial={
+                  shouldReduceMotion
+                    ? false
+                    : {
+                        opacity: 0,
+                        y: 25,
+                      }
+                }
+                animate={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                transition={{
+                  duration:
+                    shouldReduceMotion
+                      ? 0
+                      : 1.1,
+
+                  delay:
+                    shouldReduceMotion
+                      ? 0
+                      : 0.28,
+
+                  ease: [
+                    0.22,
+                    1,
+                    0.36,
+                    1,
+                  ],
+                }}
+                className="mt-2 font-serif text-2xl font-bold md:text-3xl"
+              >
                 {tourPackage.duration}
-              </p>
+              </motion.p>
 
               {tourPackage.subtitle && (
-                <p className="mt-5 text-sm text-white/95 md:text-base">
+                <motion.p
+                  initial={
+                    shouldReduceMotion
+                      ? false
+                      : {
+                          opacity: 0,
+                          y: 20,
+                        }
+                  }
+                  animate={{
+                    opacity: 1,
+                    y: 0,
+                  }}
+                  transition={{
+                    duration:
+                      shouldReduceMotion
+                        ? 0
+                        : 1.1,
+
+                    delay:
+                      shouldReduceMotion
+                        ? 0
+                        : 0.42,
+
+                    ease: [
+                      0.22,
+                      1,
+                      0.36,
+                      1,
+                    ],
+                  }}
+                  className="mt-5 text-sm text-white/95 md:text-base"
+                >
                   {tourPackage.subtitle}
-                </p>
+                </motion.p>
               )}
             </div>
           </div>
         </section>
 
-        {/* Quick Information */}
+        {/* =====================================================
+            QUICK INFORMATION
+        ====================================================== */}
         <section className="bg-[#f1f9fd] py-4 md:py-5">
           <div className="mx-auto grid max-w-[1700px] items-center gap-5 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-[1fr_1.1fr_1.1fr_1.2fr_1.4fr] lg:px-8">
             <QuickInfo
               icon={Clock3}
               title="Duration"
               value={tourPackage.duration}
+              index={0}
+              shouldReduceMotion={
+                shouldReduceMotion
+              }
             />
 
             <QuickInfo
               icon={MapPin}
               title="Destinations"
               value={tourPackage.destinations
-                .map((item) => item.name)
+                .map(
+                  (item) => item.name
+                )
                 .join(", ")}
+              index={1}
+              shouldReduceMotion={
+                shouldReduceMotion
+              }
             />
 
             <QuickInfo
@@ -191,6 +339,10 @@ const PackageDetailPage = () => {
                       " / "
                     )
                   : "Custom Tour"
+              }
+              index={2}
+              shouldReduceMotion={
+                shouldReduceMotion
               }
             />
 
@@ -204,9 +356,49 @@ const PackageDetailPage = () => {
                     )
                   : "On Request"
               }
+              index={3}
+              shouldReduceMotion={
+                shouldReduceMotion
+              }
             />
 
-            <div className="flex flex-col gap-2">
+            <motion.div
+              initial={
+                shouldReduceMotion
+                  ? false
+                  : {
+                      opacity: 0,
+                      x: 25,
+                    }
+              }
+              whileInView={{
+                opacity: 1,
+                x: 0,
+              }}
+              viewport={{
+                once: true,
+                amount: 0.3,
+              }}
+              transition={{
+                duration:
+                  shouldReduceMotion
+                    ? 0
+                    : 1,
+
+                delay:
+                  shouldReduceMotion
+                    ? 0
+                    : 0.4,
+
+                ease: [
+                  0.22,
+                  1,
+                  0.36,
+                  1,
+                ],
+              }}
+              className="flex flex-col gap-2"
+            >
               <Link
                 href={`/enquiry?package=${encodeURIComponent(
                   tourPackage.slug
@@ -223,25 +415,96 @@ const PackageDetailPage = () => {
               >
                 Plan a Custom Trip
               </Link>
-            </div>
+            </motion.div>
           </div>
         </section>
 
-        {/* About */}
+        {/* =====================================================
+            ABOUT
+        ====================================================== */}
         <section className="pt-7 md:pt-8">
           <div className="mx-auto max-w-[1700px] px-4 sm:px-6 lg:px-8">
             <div className="grid items-stretch gap-6 lg:grid-cols-[2.15fr_0.9fr]">
-              <div>
+              <motion.div
+                initial={
+                  shouldReduceMotion
+                    ? false
+                    : {
+                        opacity: 0,
+                        x: -30,
+                      }
+                }
+                whileInView={{
+                  opacity: 1,
+                  x: 0,
+                }}
+                viewport={{
+                  once: true,
+                  amount: 0.3,
+                }}
+                transition={{
+                  duration:
+                    shouldReduceMotion
+                      ? 0
+                      : 1.1,
+
+                  ease: [
+                    0.22,
+                    1,
+                    0.36,
+                    1,
+                  ],
+                }}
+              >
                 <SectionHeading>
                   About This Tour
                 </SectionHeading>
 
                 <p className="mt-4 max-w-5xl text-sm leading-6 text-[#1e3546] md:text-base md:leading-7">
-                  {tourPackage.description}
+                  {
+                    tourPackage.description
+                  }
                 </p>
-              </div>
+              </motion.div>
 
-              <div className="flex min-h-[145px] flex-col items-center justify-center rounded-lg bg-[#edf8fd] px-8 py-5 text-center">
+              {/* Quote */}
+              <motion.div
+                initial={
+                  shouldReduceMotion
+                    ? false
+                    : {
+                        opacity: 0,
+                        x: 30,
+                      }
+                }
+                whileInView={{
+                  opacity: 1,
+                  x: 0,
+                }}
+                viewport={{
+                  once: true,
+                  amount: 0.3,
+                }}
+                transition={{
+                  duration:
+                    shouldReduceMotion
+                      ? 0
+                      : 1.1,
+
+                  delay:
+                    shouldReduceMotion
+                      ? 0
+                      : 0.18,
+
+                  ease: [
+                    0.22,
+                    1,
+                    0.36,
+                    1,
+                  ],
+                }}
+                className="flex min-h-[145px] flex-col items-center justify-center rounded-lg bg-[#edf8fd] px-8 py-5 text-center"
+              >
                 <div className="self-start font-serif text-4xl font-bold leading-none text-[#06364a]">
                   “
                 </div>
@@ -250,22 +513,72 @@ const PackageDetailPage = () => {
                   Travel is not just about
                   places,
                   <br />
-                  but also about experiences.
+                  but also about
+                  experiences.
                 </p>
 
                 <div className="mt-4 h-[3px] w-8 bg-[#ff681f]" />
-              </div>
+              </motion.div>
             </div>
 
             {/* Destination Cards */}
             <div className="mt-5 grid gap-3 md:grid-cols-3">
               {tourPackage.destinations.map(
-                (destination) => (
-                  <article
-                    key={destination.name}
+                (
+                  destination,
+                  index
+                ) => (
+                  <motion.article
+                    key={
+                      destination.name
+                    }
+                    initial={
+                      shouldReduceMotion
+                        ? false
+                        : {
+                            opacity: 0,
+                            y: 30,
+                            scale: 0.98,
+                          }
+                    }
+                    whileInView={{
+                      opacity: 1,
+                      y: 0,
+                      scale: 1,
+                    }}
+                    viewport={{
+                      once: true,
+                      amount: 0.2,
+                    }}
+                    transition={{
+                      duration:
+                        shouldReduceMotion
+                          ? 0
+                          : 1,
+
+                      delay:
+                        shouldReduceMotion
+                          ? 0
+                          : index *
+                            0.14,
+
+                      ease: [
+                        0.22,
+                        1,
+                        0.36,
+                        1,
+                      ],
+                    }}
+                    whileHover={
+                      shouldReduceMotion
+                        ? undefined
+                        : {
+                            y: -5,
+                          }
+                    }
                   >
                     <div className="overflow-hidden rounded-md">
-                      <img
+                      <motion.img
                         src={
                           destination.image
                         }
@@ -273,11 +586,24 @@ const PackageDetailPage = () => {
                           destination.name
                         }
                         className="h-[210px] w-full object-cover md:h-[220px]"
+                        whileHover={
+                          shouldReduceMotion
+                            ? undefined
+                            : {
+                                scale: 1.06,
+                              }
+                        }
+                        transition={{
+                          duration: 0.6,
+                          ease: "easeOut",
+                        }}
                       />
                     </div>
 
                     <h3 className="mt-2 text-base font-bold text-[#06364a]">
-                      {destination.name}
+                      {
+                        destination.name
+                      }
                     </h3>
 
                     {destination.subtitle && (
@@ -287,37 +613,142 @@ const PackageDetailPage = () => {
                         }
                       </p>
                     )}
-                  </article>
+                  </motion.article>
                 )
               )}
             </div>
           </div>
         </section>
 
-        {/* Itinerary + Right Column */}
+        {/* =====================================================
+            ITINERARY + RIGHT COLUMN
+        ====================================================== */}
         <section className="py-8 md:py-10">
           <div className="mx-auto grid max-w-[1700px] items-start gap-6 px-4 sm:px-6 lg:grid-cols-[1.28fr_1fr] lg:px-8">
+
             {/* Left - Itinerary */}
-            <div>
+            <motion.div
+              initial={
+                shouldReduceMotion
+                  ? false
+                  : {
+                      opacity: 0,
+                      x: -30,
+                    }
+              }
+              whileInView={{
+                opacity: 1,
+                x: 0,
+              }}
+              viewport={{
+                once: true,
+                amount: 0.15,
+              }}
+              transition={{
+                duration:
+                  shouldReduceMotion
+                    ? 0
+                    : 1.1,
+
+                ease: [
+                  0.22,
+                  1,
+                  0.36,
+                  1,
+                ],
+              }}
+            >
               <SectionHeading>
                 Detailed Itinerary
               </SectionHeading>
 
               <div className="relative mt-6">
-                {/*
-                  Timeline center:
-                  75px Day column
-                  + 16px gap
-                  + 14px half of 28px timeline column
-                  = 105px
+                {/* 
+                  IMPORTANT:
+                  If there is only Day 1,
+                  show the circle but NO line.
                 */}
-                <div className="absolute bottom-5 left-[105px] top-5 hidden w-px -translate-x-1/2 bg-[#b9d4e2] sm:block" />
+                {hasMultipleDays && (
+                  <motion.div
+                    initial={
+                      shouldReduceMotion
+                        ? false
+                        : {
+                            scaleY: 0,
+                          }
+                    }
+                    whileInView={{
+                      scaleY: 1,
+                    }}
+                    viewport={{
+                      once: true,
+                    }}
+                    transition={{
+                      duration:
+                        shouldReduceMotion
+                          ? 0
+                          : 1.2,
+
+                      delay:
+                        shouldReduceMotion
+                          ? 0
+                          : 0.25,
+
+                      ease: [
+                        0.22,
+                        1,
+                        0.36,
+                        1,
+                      ],
+                    }}
+                    style={{
+                      transformOrigin:
+                        "top",
+                    }}
+                    className="absolute bottom-5 left-[105px] top-5 hidden w-px -translate-x-1/2 bg-[#b9d4e2] sm:block"
+                  />
+                )}
 
                 <div className="space-y-8 md:space-y-10">
                   {tourPackage.itinerary.map(
-                    (day) => (
-                      <div
+                    (day, index) => (
+                      <motion.div
                         key={day.day}
+                        initial={
+                          shouldReduceMotion
+                            ? false
+                            : {
+                                opacity: 0,
+                                y: 25,
+                              }
+                        }
+                        whileInView={{
+                          opacity: 1,
+                          y: 0,
+                        }}
+                        viewport={{
+                          once: true,
+                          amount: 0.25,
+                        }}
+                        transition={{
+                          duration:
+                            shouldReduceMotion
+                              ? 0
+                              : 1,
+
+                          delay:
+                            shouldReduceMotion
+                              ? 0
+                              : index *
+                                0.14,
+
+                          ease: [
+                            0.22,
+                            1,
+                            0.36,
+                            1,
+                          ],
+                        }}
                         className="relative grid gap-4 sm:grid-cols-[75px_28px_1fr]"
                       >
                         {/* Day */}
@@ -327,7 +758,7 @@ const PackageDetailPage = () => {
                           </div>
                         </div>
 
-                        {/* Timeline Dot */}
+                        {/* Timeline Circle */}
                         <div className="relative hidden sm:flex sm:justify-center">
                           <div className="relative z-10 mt-1 h-5 w-5 rounded-full border-2 border-[#28739a] bg-[#28739a]" />
                         </div>
@@ -340,28 +771,68 @@ const PackageDetailPage = () => {
 
                           <ul className="mt-2 space-y-0.5 pl-5 text-sm leading-6 text-[#213a4b] md:text-base">
                             {day.activities.map(
-                              (activity) => (
+                              (
+                                activity
+                              ) => (
                                 <li
                                   key={
                                     activity
                                   }
                                   className="list-disc"
                                 >
-                                  {activity}
+                                  {
+                                    activity
+                                  }
                                 </li>
                               )
                             )}
                           </ul>
                         </div>
-                      </div>
+                      </motion.div>
                     )
                   )}
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Right Column */}
-            <div className="space-y-4">
+            <motion.div
+              initial={
+                shouldReduceMotion
+                  ? false
+                  : {
+                      opacity: 0,
+                      x: 30,
+                    }
+              }
+              whileInView={{
+                opacity: 1,
+                x: 0,
+              }}
+              viewport={{
+                once: true,
+                amount: 0.15,
+              }}
+              transition={{
+                duration:
+                  shouldReduceMotion
+                    ? 0
+                    : 1.1,
+
+                delay:
+                  shouldReduceMotion
+                    ? 0
+                    : 0.18,
+
+                ease: [
+                  0.22,
+                  1,
+                  0.36,
+                  1,
+                ],
+              }}
+              className="space-y-4"
+            >
               {/* Tour Highlights */}
               <ReferenceCard title="Tour Highlights">
                 <div className="space-y-1.5">
@@ -413,18 +884,32 @@ const PackageDetailPage = () => {
               </ReferenceCard>
 
               {/* Vehicle Options */}
-              <div className="overflow-hidden rounded-lg">
+              <motion.div
+                whileHover={
+                  shouldReduceMotion
+                    ? undefined
+                    : {
+                        y: -4,
+                      }
+                }
+                transition={{
+                  duration: 0.25,
+                }}
+                className="overflow-hidden rounded-lg"
+              >
                 <img
                   src="/images/packages/vehicle-options.png"
                   alt="Innova 7 seater, Urbania 17 seater, Tempo Traveller 25 seater and SML Bus 33 seater"
                   className="block h-auto w-full"
                 />
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
         </section>
 
-        {/* Customize Tour */}
+        {/* =====================================================
+            CUSTOMIZE TOUR CTA
+        ====================================================== */}
         <section
           className="relative bg-cover bg-center py-8 md:py-10"
           style={{
@@ -434,7 +919,38 @@ const PackageDetailPage = () => {
           <div className="absolute inset-0 bg-[#06364a]/80" />
 
           <div className="relative z-10 mx-auto max-w-[1700px] px-4 text-white sm:px-6 lg:px-8">
-            <div className="max-w-3xl">
+            <motion.div
+              initial={
+                shouldReduceMotion
+                  ? false
+                  : {
+                      opacity: 0,
+                      x: -30,
+                    }
+              }
+              whileInView={{
+                opacity: 1,
+                x: 0,
+              }}
+              viewport={{
+                once: true,
+                amount: 0.4,
+              }}
+              transition={{
+                duration:
+                  shouldReduceMotion
+                    ? 0
+                    : 1.1,
+
+                ease: [
+                  0.22,
+                  1,
+                  0.36,
+                  1,
+                ],
+              }}
+              className="max-w-3xl"
+            >
               <h2 className="font-serif text-3xl font-bold md:text-4xl">
                 Want to Customize This
                 Tour?
@@ -457,7 +973,7 @@ const PackageDetailPage = () => {
                 Plan a Custom Trip
                 <ArrowRight size={17} />
               </Link>
-            </div>
+            </motion.div>
           </div>
         </section>
       </main>
@@ -467,21 +983,65 @@ const PackageDetailPage = () => {
   );
 };
 
-/* Quick Information */
+/* =========================================================
+   QUICK INFORMATION
+========================================================= */
 
 interface QuickInfoProps {
   icon: typeof Clock3;
   title: string;
   value: string;
+  index: number;
+  shouldReduceMotion:
+    | boolean
+    | null;
 }
 
 const QuickInfo = ({
   icon: Icon,
   title,
   value,
+  index,
+  shouldReduceMotion,
 }: QuickInfoProps) => {
   return (
-    <div className="flex items-center gap-3">
+    <motion.div
+      initial={
+        shouldReduceMotion
+          ? false
+          : {
+              opacity: 0,
+              y: 20,
+            }
+      }
+      whileInView={{
+        opacity: 1,
+        y: 0,
+      }}
+      viewport={{
+        once: true,
+        amount: 0.3,
+      }}
+      transition={{
+        duration:
+          shouldReduceMotion
+            ? 0
+            : 0.9,
+
+        delay:
+          shouldReduceMotion
+            ? 0
+            : index * 0.1,
+
+        ease: [
+          0.22,
+          1,
+          0.36,
+          1,
+        ],
+      }}
+      className="flex items-center gap-3"
+    >
       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-[#06364a] shadow-sm">
         <Icon
           size={23}
@@ -498,11 +1058,13 @@ const QuickInfo = ({
           {value}
         </p>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
-/* Section Heading */
+/* =========================================================
+   SECTION HEADING
+========================================================= */
 
 interface SectionHeadingProps {
   children: React.ReactNode;
@@ -522,7 +1084,9 @@ const SectionHeading = ({
   );
 };
 
-/* Information Card */
+/* =========================================================
+   INFORMATION CARD
+========================================================= */
 
 interface ReferenceCardProps {
   title: string;

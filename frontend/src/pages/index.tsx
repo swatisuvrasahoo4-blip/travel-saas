@@ -6,6 +6,7 @@ import TourPackages from "@/components/home/TourPackages";
 import TravellerReviews from "@/components/home/TravellerReviews";
 import TravelTypes from "@/components/home/TravelTypes";
 import WhyChooseUs from "@/components/home/WhyChooseUs";
+
 import Footer from "@/components/layout/Footer";
 import Navbar from "@/components/layout/Navbar";
 
@@ -13,16 +14,25 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main>
+
+      <main className="bg-[#fffaf3]">
         <Hero />
+
         <TravelTypes />
+
         <FeaturedDestinations />
+
         <TourPackages />
+
         <TravellerReviews />
+
         <WhyChooseUs />
+
         <JourneyMoments />
+
         <ExploreCta />
       </main>
+
       <Footer />
     </>
   );
