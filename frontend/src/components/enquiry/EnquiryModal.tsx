@@ -1,3 +1,5 @@
+import axios from "axios";
+
 import {
   CalendarDays,
   Mail,
@@ -23,6 +25,10 @@ import {
 import {
   useEnquiry,
 } from "@/components/enquiry/EnquiryProvider";
+
+import {
+  createEnquiry,
+} from "@/services/enquiryService";
 
 /* =========================================
    FORM
@@ -86,6 +92,21 @@ const EnquiryForm = ({
     setMessage,
   ] = useState("");
 
+  const [
+    isSubmitting,
+    setIsSubmitting,
+  ] = useState(false);
+
+  const [
+    errorMessage,
+    setErrorMessage,
+  ] = useState("");
+
+  const [
+    successMessage,
+    setSuccessMessage,
+  ] = useState("");
+
   if (!agency) {
     return null;
   }
@@ -97,13 +118,6 @@ const EnquiryForm = ({
   const tripTypes =
     agency.enquiryOptions
       ?.tripTypes ?? [];
-
-  /*
-    If the destination came from
-    Destination Details page and is
-    not present in enquiryOptions,
-    still show it in the dropdown.
-  */
 
   const destinationOptions = [
     ...destinations,
@@ -130,33 +144,111 @@ const EnquiryForm = ({
     enquiryData.source ===
     "package";
 
-  const handleSubmit = (
+  const handleSubmit = async (
     event: FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
 
-    console.log({
-      source:
-        enquiryData.source,
+    setErrorMessage("");
+    setSuccessMessage("");
 
-      packageName:
-        enquiryData.packageName,
+    if (!name.trim()) {
+      setErrorMessage(
+        "Please enter your name."
+      );
+      return;
+    }
 
-      packageId:
-        enquiryData.packageId,
+    if (!phone.trim()) {
+      setErrorMessage(
+        "Please enter your phone number."
+      );
+      return;
+    }
 
-      name,
-      phone,
-      email,
-      destination:
-        isPackageEnquiry
-          ? ""
-          : destination,
-      travelDate,
-      travellers,
-      tripType,
-      message,
-    });
+    try {
+      setIsSubmitting(true);
+
+      const hostname =
+        window.location.hostname;
+
+      const response =
+        await createEnquiry({
+          hostname,
+
+          source:
+            enquiryData.source,
+
+          packageId:
+            enquiryData.packageId,
+
+          packageName:
+            enquiryData.packageName,
+
+          name:
+            name.trim(),
+
+          phone:
+            phone.trim(),
+
+          email:
+            email.trim(),
+
+          destination:
+            isPackageEnquiry
+              ? ""
+              : destination,
+
+          travelDate,
+
+          travellers,
+
+          tripType,
+
+          message:
+            message.trim(),
+        });
+
+      setSuccessMessage(
+        response.message ||
+          "Enquiry submitted successfully."
+      );
+
+      setTimeout(() => {
+        closeEnquiry();
+      }, 1500);
+    } catch (error) {
+      if (
+        axios.isAxiosError(error)
+      ) {
+        if (
+          error.response?.status ===
+          409
+        ) {
+          setErrorMessage(
+            error.response.data
+              ?.message ||
+              "You have already submitted an enquiry for this package."
+          );
+
+          return;
+        }
+
+        setErrorMessage(
+          error.response?.data
+            ?.message ||
+            "Unable to submit enquiry. Please try again."
+        );
+
+        return;
+      }
+
+      setErrorMessage(
+        "Unable to submit enquiry. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -170,6 +262,9 @@ const EnquiryForm = ({
       <div>
         <label className="mb-1.5 block text-sm font-semibold text-gray-700">
           Name
+          <span className="ml-1 text-red-500">
+            *
+          </span>
         </label>
 
         <div className="relative">
@@ -180,6 +275,7 @@ const EnquiryForm = ({
 
           <input
             type="text"
+            required
             value={name}
             onChange={(event) =>
               setName(
@@ -318,8 +414,6 @@ const EnquiryForm = ({
       {/* Date + Travellers */}
 
       <div className="grid gap-4 sm:grid-cols-2">
-        {/* Travel Date */}
-
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-gray-700">
             Travel Date
@@ -343,8 +437,6 @@ const EnquiryForm = ({
             />
           </div>
         </div>
-
-        {/* Travellers */}
 
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-gray-700">
@@ -433,22 +525,38 @@ const EnquiryForm = ({
         </div>
       </div>
 
+      {/* Status Messages */}
+
+      {errorMessage && (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
+          {errorMessage}
+        </div>
+      )}
+
+      {successMessage && (
+        <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-700">
+          {successMessage}
+        </div>
+      )}
+
       {/* Actions */}
 
       <div className="flex flex-col-reverse gap-3 pt-1 sm:flex-row sm:justify-end">
         <button
           type="button"
+          disabled={isSubmitting}
           onClick={
             closeEnquiry
           }
-          className="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-50"
+          className="rounded-xl border border-gray-200 px-5 py-3 text-sm font-semibold text-gray-600 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
         >
           Cancel
         </button>
 
         <button
           type="submit"
-          className="inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-bold text-white shadow-md transition hover:opacity-90"
+          disabled={isSubmitting}
+          className="inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-bold text-white shadow-md transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
           style={{
             backgroundColor:
               agency.accentColor,
@@ -456,7 +564,9 @@ const EnquiryForm = ({
         >
           <Send size={17} />
 
-          Send Enquiry
+          {isSubmitting
+            ? "Sending..."
+            : "Send Enquiry"}
         </button>
       </div>
     </form>
@@ -477,10 +587,6 @@ const EnquiryModal = () => {
     enquiryData,
     closeEnquiry,
   } = useEnquiry();
-
-  /* =========================================
-     ESCAPE KEY
-  ========================================= */
 
   useEffect(() => {
     if (!isOpen) {
@@ -519,10 +625,6 @@ const EnquiryModal = () => {
   ) {
     return null;
   }
-
-  /* =========================================
-     HEADING
-  ========================================= */
 
   let title =
     "Plan Your Journey";
@@ -589,8 +691,6 @@ const EnquiryModal = () => {
         }
         className="relative max-h-[95vh] w-full overflow-y-auto rounded-t-3xl bg-[#fffaf3] shadow-2xl sm:max-w-2xl sm:rounded-3xl"
       >
-        {/* Header */}
-
         <div
           className="relative overflow-hidden rounded-t-3xl px-5 py-6 text-white sm:px-7"
           style={{
@@ -630,8 +730,6 @@ const EnquiryModal = () => {
           </div>
         </div>
 
-        {/* Package Selected */}
-
         {enquiryData.source ===
           "package" &&
           enquiryData.packageName && (
@@ -654,8 +752,6 @@ const EnquiryModal = () => {
             </div>
           )}
 
-        {/* Destination Selected */}
-
         {enquiryData.source ===
           "destination" &&
           enquiryData.destination && (
@@ -677,8 +773,6 @@ const EnquiryModal = () => {
               </p>
             </div>
           )}
-
-        {/* Form */}
 
         <div className="px-5 py-6 sm:px-7">
           <EnquiryForm

@@ -24,6 +24,8 @@ import vehicleRoutes from "./routes/vehicle.js";
 
 import contactMessageRoutes from "./routes/contactMessage.js";
 
+import enquiryRoutes from "./routes/enquiry.js";
+
 import connectDB from "./config/db.js";
 
 /* =========================================
@@ -231,6 +233,11 @@ app.use(
 app.use(
   "/contact-message",
   contactMessageRoutes
+);
+
+app.use(
+  "/enquiry",
+  enquiryRoutes
 );
 
 /* =========================================

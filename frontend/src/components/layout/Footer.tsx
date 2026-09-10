@@ -24,8 +24,11 @@ const Footer = () => {
     return null;
   }
 
+  const primaryPhone =
+    agency.phones?.[0] || "";
+
   const phoneHref =
-    agency.phone.replace(
+    primaryPhone.replace(
       /[^0-9+]/g,
       ""
     );
@@ -68,15 +71,8 @@ const Footer = () => {
           agency.primaryColor,
       }}
     >
-      {/* =====================================================
-          MAIN FOOTER
-      ====================================================== */}
       <section className="border-b border-white/15">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-9 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.05fr_1.1fr_1.1fr_0.8fr] lg:px-8">
-
-          {/* =================================================
-              BRAND
-          ================================================== */}
           <motion.div
             className="text-center md:text-left"
             initial={
@@ -142,9 +138,6 @@ const Footer = () => {
             </Link>
           </motion.div>
 
-          {/* =================================================
-              QUICK LINKS
-          ================================================== */}
           <motion.div
             className="border-t border-white/15 pt-6 md:border-t-0 md:pt-0 lg:border-l lg:pl-8"
             initial={
@@ -168,12 +161,10 @@ const Footer = () => {
                 shouldReduceMotion
                   ? 0
                   : 1.1,
-
               delay:
                 shouldReduceMotion
                   ? 0
                   : 0.18,
-
               ease: [
                 0.22,
                 1,
@@ -211,7 +202,6 @@ const Footer = () => {
                         shouldReduceMotion
                           ? 0
                           : 0.6,
-
                       delay:
                         shouldReduceMotion
                           ? 0
@@ -247,9 +237,6 @@ const Footer = () => {
             </div>
           </motion.div>
 
-          {/* =================================================
-              CONTACT INFO
-          ================================================== */}
           <motion.div
             className="border-t border-white/15 pt-6 md:border-t-0 md:pt-0 lg:border-l lg:pl-8"
             initial={
@@ -273,12 +260,10 @@ const Footer = () => {
                 shouldReduceMotion
                   ? 0
                   : 1.1,
-
               delay:
                 shouldReduceMotion
                   ? 0
                   : 0.32,
-
               ease: [
                 0.22,
                 1,
@@ -317,28 +302,40 @@ const Footer = () => {
                 </motion.div>
               )}
 
-              {agency.phone && (
-                <motion.a
-                  href={`tel:${phoneHref}`}
-                  className="flex items-center gap-3 text-sm text-white/85 transition-colors hover:text-white"
-                  whileHover={
-                    shouldReduceMotion
-                      ? undefined
-                      : {
-                          x: 3,
-                        }
-                  }
-                  transition={{
-                    duration: 0.2,
-                  }}
-                >
-                  <Phone
-                    size={18}
-                    className="shrink-0"
-                  />
+              {agency.phones?.map(
+                (phone) => {
+                  const currentPhoneHref =
+                    phone.replace(
+                      /[^0-9+]/g,
+                      ""
+                    );
 
-                  {agency.phone}
-                </motion.a>
+                  return (
+                    <motion.a
+                      key={phone}
+                      href={`tel:${currentPhoneHref}`}
+                      className="flex items-center gap-3 text-sm text-white/85 transition-colors hover:text-white"
+                      whileHover={
+                        shouldReduceMotion
+                          ? undefined
+                          : {
+                              x: 3,
+                            }
+                      }
+                      transition={{
+                        duration:
+                          0.2,
+                      }}
+                    >
+                      <Phone
+                        size={18}
+                        className="shrink-0"
+                      />
+
+                      {phone}
+                    </motion.a>
+                  );
+                }
               )}
 
               {agency.email && (
@@ -367,9 +364,6 @@ const Footer = () => {
             </div>
           </motion.div>
 
-          {/* =================================================
-              TAGLINE AREA
-          ================================================== */}
           <motion.div
             className="border-t border-white/15 pt-6 text-center md:text-left lg:border-t-0 lg:border-l lg:pl-8"
             initial={
@@ -393,12 +387,10 @@ const Footer = () => {
                 shouldReduceMotion
                   ? 0
                   : 1.1,
-
               delay:
                 shouldReduceMotion
                   ? 0
                   : 0.45,
-
               ease: [
                 0.22,
                 1,
@@ -420,7 +412,6 @@ const Footer = () => {
               style={{
                 backgroundColor:
                   agency.accentColor,
-
                 transformOrigin:
                   "left",
               }}
@@ -444,12 +435,10 @@ const Footer = () => {
                   shouldReduceMotion
                     ? 0
                     : 0.9,
-
                 delay:
                   shouldReduceMotion
                     ? 0
                     : 0.75,
-
                 ease: [
                   0.22,
                   1,
@@ -462,9 +451,6 @@ const Footer = () => {
         </div>
       </section>
 
-      {/* =====================================================
-          COPYRIGHT
-      ====================================================== */}
       <section>
         <motion.div
           className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-5 text-center text-xs text-white/75 sm:px-6 md:flex-row md:items-center md:justify-between md:text-left lg:px-8"
@@ -489,12 +475,10 @@ const Footer = () => {
               shouldReduceMotion
                 ? 0
                 : 1,
-
             delay:
               shouldReduceMotion
                 ? 0
                 : 0.25,
-
             ease: [
               0.22,
               1,
