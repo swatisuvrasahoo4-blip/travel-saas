@@ -1,5 +1,28 @@
 import Agency from "../models/Agency.js";
 
+/* =========================================
+   NORMALIZE DOMAIN
+========================================= */
+
+const normalizeDomain = (domain) => {
+  if (!domain) {
+    return "";
+  }
+
+  return domain
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/^https?:\/\//, "")
+    .replace(/^www\./, "")
+    .split("/")[0]
+    .split(":")[0];
+};
+
+/* =========================================
+   CREATE AGENCY
+========================================= */
+
 export const createAgency = async (
   req,
   res
@@ -8,17 +31,19 @@ export const createAgency = async (
     const {
       name,
       slug,
-      domain,
+      domains,
       phone,
       email,
       address,
       tagline,
       logo,
+      favicon,
       heroImage,
       servicesBackgroundImage,
       travelTypes,
       featuredDestinations,
       enquiryOptions,
+      about,
       primaryColor,
       secondaryColor,
       accentColor,
@@ -33,14 +58,29 @@ export const createAgency = async (
     }
 
     const normalizedSlug =
-      slug.toLowerCase().trim();
+      slug
+        .toLowerCase()
+        .trim();
 
-    const normalizedDomain =
-      domain
-        ?.toLowerCase()
-        .trim()
-        .replace(/^www\./, "") ||
-      "";
+    /* =====================================
+       NORMALIZE DOMAINS
+    ===================================== */
+
+    const normalizedDomains = [
+      ...new Set(
+        (
+          Array.isArray(domains)
+            ? domains
+            : []
+        )
+          .map(normalizeDomain)
+          .filter(Boolean)
+      ),
+    ];
+
+    /* =====================================
+       CHECK SLUG
+    ===================================== */
 
     const existingAgency =
       await Agency.findOne({
@@ -55,32 +95,56 @@ export const createAgency = async (
       });
     }
 
-    if (normalizedDomain) {
+    /* =====================================
+       CHECK DOMAINS
+    ===================================== */
+
+    if (
+      normalizedDomains.length > 0
+    ) {
       const existingDomain =
         await Agency.findOne({
-          domain: normalizedDomain,
+          domains: {
+            $in: normalizedDomains,
+          },
         });
 
       if (existingDomain) {
         return res.status(409).json({
           success: false,
           message:
-            "Agency with this domain already exists",
+            "One or more domains are already assigned to another agency",
         });
       }
     }
 
+    /* =====================================
+       CREATE
+    ===================================== */
+
     const agency =
       await Agency.create({
         name,
+
         slug: normalizedSlug,
-        domain: normalizedDomain,
+
+        domains:
+          normalizedDomains,
+
         phone,
+
         email,
+
         address,
+
         tagline,
+
         logo,
+
+        favicon,
+
         heroImage,
+
         servicesBackgroundImage,
 
         travelTypes:
@@ -101,8 +165,13 @@ export const createAgency = async (
             tripTypes: [],
           },
 
+        about:
+          about || undefined,
+
         primaryColor,
+
         secondaryColor,
+
         accentColor,
       });
 
@@ -126,55 +195,75 @@ export const createAgency = async (
   }
 };
 
+/* =========================================
+   GET AGENCY BY DOMAIN
+========================================= */
+
 export const getAgencyByDomain =
   async (req, res) => {
     try {
-      const { hostname } = req.query;
+      const { hostname } =
+        req.query;
 
       if (!hostname) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Hostname is required",
-        });
+        return res
+          .status(400)
+          .json({
+            success: false,
+            message:
+              "Hostname is required",
+          });
       }
 
       const normalizedHostname =
-        hostname
-          .toString()
-          .toLowerCase()
-          .replace(/^www\./, "")
-          .split(":")[0];
+        normalizeDomain(hostname);
+
+      if (!normalizedHostname) {
+        return res
+          .status(400)
+          .json({
+            success: false,
+            message:
+              "Invalid hostname",
+          });
+      }
 
       const agency =
         await Agency.findOne({
-          domain:
+          domains:
             normalizedHostname,
+
           status: "active",
         });
 
       if (!agency) {
-        return res.status(404).json({
-          success: false,
-          message:
-            "Agency not found",
-        });
+        return res
+          .status(404)
+          .json({
+            success: false,
+            message:
+              "Agency not found",
+          });
       }
 
-      return res.status(200).json({
-        success: true,
-        agency,
-      });
+      return res
+        .status(200)
+        .json({
+          success: true,
+          agency,
+        });
     } catch (error) {
       console.error(
         "Get agency by domain error:",
         error
       );
 
-      return res.status(500).json({
-        success: false,
-        message:
-          "Unable to get agency",
-      });
+      return res
+        .status(500)
+        .json({
+          success: false,
+          message:
+            "Unable to get agency",
+        });
     }
   };

@@ -1,5 +1,9 @@
 import mongoose from "mongoose";
 
+/* =========================================
+   TRAVEL TYPE
+========================================= */
+
 const travelTypeSchema =
   new mongoose.Schema(
     {
@@ -26,6 +30,10 @@ const travelTypeSchema =
       _id: false,
     }
   );
+
+/* =========================================
+   FEATURED DESTINATION
+========================================= */
 
 const featuredDestinationSchema =
   new mongoose.Schema(
@@ -368,11 +376,15 @@ const agencySchema =
         lowercase: true,
       },
 
-      domain: {
-        type: String,
-        default: "",
-        trim: true,
-        lowercase: true,
+      domains: {
+        type: [String],
+        default: [],
+        set: (domains) =>
+          domains.map((domain) =>
+            domain
+              .trim()
+              .toLowerCase()
+          ),
       },
 
       phone: {
@@ -483,9 +495,10 @@ const agencySchema =
     }
   );
 
-const Agency = mongoose.model(
-  "Agency",
-  agencySchema
-);
+const Agency =
+  mongoose.model(
+    "Agency",
+    agencySchema
+  );
 
 export default Agency;
