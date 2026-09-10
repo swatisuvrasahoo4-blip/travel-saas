@@ -1,14 +1,26 @@
 import Agency from "../models/Agency.js";
 import Review from "../models/Review.js";
 
+/* =========================================
+   NORMALIZE HOSTNAME
+========================================= */
+
 const normalizeHostname = (
   hostname = ""
 ) => {
   return hostname
+    .toString()
     .trim()
     .toLowerCase()
-    .replace(/^www\./, "");
+    .replace(/^https?:\/\//, "")
+    .replace(/^www\./, "")
+    .split("/")[0]
+    .split(":")[0];
 };
+
+/* =========================================
+   GET ALL REVIEWS
+========================================= */
 
 export const getReviewsByDomain =
   async (req, res) => {
@@ -28,7 +40,7 @@ export const getReviewsByDomain =
 
       const agency =
         await Agency.findOne({
-          domain: hostname,
+          domains: hostname,
           status: "active",
         });
 
@@ -68,6 +80,10 @@ export const getReviewsByDomain =
     }
   };
 
+/* =========================================
+   GET FEATURED REVIEWS
+========================================= */
+
 export const getFeaturedReviewsByDomain =
   async (req, res) => {
     try {
@@ -86,7 +102,7 @@ export const getFeaturedReviewsByDomain =
 
       const agency =
         await Agency.findOne({
-          domain: hostname,
+          domains: hostname,
           status: "active",
         });
 
@@ -127,6 +143,10 @@ export const getFeaturedReviewsByDomain =
       });
     }
   };
+
+/* =========================================
+   SUBMIT WEBSITE REVIEW
+========================================= */
 
 export const submitWebsiteReview =
   async (req, res) => {
@@ -173,7 +193,7 @@ export const submitWebsiteReview =
 
       const agency =
         await Agency.findOne({
-          domain:
+          domains:
             normalizedHostname,
           status: "active",
         });
@@ -189,12 +209,20 @@ export const submitWebsiteReview =
       const newReview =
         await Review.create({
           agencyId: agency._id,
+
           customerName:
             customerName.trim(),
-          rating: numericRating,
-          review: review.trim(),
+
+          rating:
+            numericRating,
+
+          review:
+            review.trim(),
+
           source: "website",
+
           status: "pending",
+
           featured: false,
         });
 
@@ -202,7 +230,9 @@ export const submitWebsiteReview =
         success: true,
         message:
           "Review submitted successfully and is awaiting approval",
-        reviewId: newReview._id,
+
+        reviewId:
+          newReview._id,
       });
     } catch (error) {
       console.error(

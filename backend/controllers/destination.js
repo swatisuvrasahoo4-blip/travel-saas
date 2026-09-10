@@ -1,10 +1,32 @@
 import Agency from "../models/Agency.js";
 import Destination from "../models/Destination.js";
 
+/* =========================================
+   NORMALIZE HOSTNAME
+========================================= */
+
+const normalizeHostname = (
+  hostname = ""
+) => {
+  return hostname
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, "")
+    .replace(/^www\./, "")
+    .split("/")[0]
+    .split(":")[0];
+};
+
+/* =========================================
+   GET ALL DESTINATIONS
+========================================= */
+
 export const getDestinationsByDomain =
   async (req, res) => {
     try {
-      const { hostname } = req.query;
+      const { hostname } =
+        req.query;
 
       if (!hostname) {
         return res.status(400).json({
@@ -15,16 +37,12 @@ export const getDestinationsByDomain =
       }
 
       const normalizedHostname =
-        hostname
-          .toString()
-          .toLowerCase()
-          .trim()
-          .replace(/^www\./, "")
-          .split(":")[0];
+        normalizeHostname(hostname);
 
       const agency =
         await Agency.findOne({
-          domain: normalizedHostname,
+          domains:
+            normalizedHostname,
           status: "active",
         }).select("_id");
 
@@ -62,11 +80,18 @@ export const getDestinationsByDomain =
     }
   };
 
+/* =========================================
+   GET DESTINATION BY SLUG
+========================================= */
+
 export const getDestinationBySlug =
   async (req, res) => {
     try {
-      const { hostname } = req.query;
-      const { slug } = req.params;
+      const { hostname } =
+        req.query;
+
+      const { slug } =
+        req.params;
 
       if (!hostname) {
         return res.status(400).json({
@@ -85,12 +110,7 @@ export const getDestinationBySlug =
       }
 
       const normalizedHostname =
-        hostname
-          .toString()
-          .toLowerCase()
-          .trim()
-          .replace(/^www\./, "")
-          .split(":")[0];
+        normalizeHostname(hostname);
 
       const normalizedSlug =
         slug
@@ -100,7 +120,8 @@ export const getDestinationBySlug =
 
       const agency =
         await Agency.findOne({
-          domain: normalizedHostname,
+          domains:
+            normalizedHostname,
           status: "active",
         }).select("_id");
 

@@ -1,14 +1,26 @@
 import Agency from "../models/Agency.js";
 import Package from "../models/Package.js";
 
+/* =========================================
+   NORMALIZE HOSTNAME
+========================================= */
+
 const normalizeHostname = (
   hostname = ""
 ) => {
   return hostname
+    .toString()
     .trim()
     .toLowerCase()
-    .replace(/^www\./, "");
+    .replace(/^https?:\/\//, "")
+    .replace(/^www\./, "")
+    .split("/")[0]
+    .split(":")[0];
 };
+
+/* =========================================
+   GET ALL PACKAGES
+========================================= */
 
 export const getPackagesByDomain =
   async (req, res) => {
@@ -28,7 +40,7 @@ export const getPackagesByDomain =
 
       const agency =
         await Agency.findOne({
-          domain: hostname,
+          domains: hostname,
           status: "active",
         });
 
@@ -68,6 +80,10 @@ export const getPackagesByDomain =
     }
   };
 
+/* =========================================
+   GET FEATURED PACKAGES
+========================================= */
+
 export const getFeaturedPackagesByDomain =
   async (req, res) => {
     try {
@@ -86,7 +102,7 @@ export const getFeaturedPackagesByDomain =
 
       const agency =
         await Agency.findOne({
-          domain: hostname,
+          domains: hostname,
           status: "active",
         });
 
@@ -128,6 +144,10 @@ export const getFeaturedPackagesByDomain =
     }
   };
 
+/* =========================================
+   GET PACKAGE BY SLUG
+========================================= */
+
 export const getPackageBySlug =
   async (req, res) => {
     try {
@@ -159,7 +179,7 @@ export const getPackageBySlug =
 
       const agency =
         await Agency.findOne({
-          domain: hostname,
+          domains: hostname,
           status: "active",
         });
 
