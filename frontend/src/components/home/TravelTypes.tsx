@@ -21,19 +21,11 @@ import type {
 } from "lucide-react";
 
 import {
-  useEffect,
-  useState,
-} from "react";
-
-import {
   motion,
   useReducedMotion,
 } from "motion/react";
 
-import {
-  Agency,
-  getAgencyByDomain,
-} from "@/services/agencyService";
+import { useAgency } from "@/context/AgencyContext";
 
 const iconMap: Record<
   string,
@@ -84,38 +76,15 @@ const getDesktopGridClass = (
 };
 
 const TravelTypes = () => {
-  const [
-    agency,
-    setAgency,
-  ] = useState<Agency | null>(
-    null
-  );
+  const { agency, loading } =
+    useAgency();
 
   const shouldReduceMotion =
     useReducedMotion();
 
-  useEffect(() => {
-    const loadAgency = async () => {
-      try {
-        const hostname =
-          window.location.hostname;
-
-        const agencyData =
-          await getAgencyByDomain(
-            hostname
-          );
-
-        setAgency(agencyData);
-      } catch (error) {
-        console.error(
-          "Unable to load travel types agency:",
-          error
-        );
-      }
-    };
-
-    loadAgency();
-  }, []);
+  if (loading) {
+    return null;
+  }
 
   if (!agency) {
     return null;
@@ -124,9 +93,7 @@ const TravelTypes = () => {
   const travelTypes =
     agency.travelTypes ?? [];
 
-  if (
-    travelTypes.length === 0
-  ) {
+  if (travelTypes.length === 0) {
     return null;
   }
 

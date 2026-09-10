@@ -10,58 +10,102 @@ import {
   useReducedMotion,
 } from "motion/react";
 
+import { useAgency } from "@/context/AgencyContext";
+
 import {
   GalleryItem,
   getFeaturedGallery,
 } from "@/services/galleryService";
 
 const JourneyMoments = () => {
-  const [galleryItems, setGalleryItems] =
-    useState<GalleryItem[]>([]);
+  const {
+    agency,
+    loading: agencyLoading,
+  } = useAgency();
 
-  const [loading, setLoading] =
-    useState(true);
+  const [
+    galleryItems,
+    setGalleryItems,
+  ] = useState<GalleryItem[]>([]);
+
+  const [
+    galleryLoading,
+    setGalleryLoading,
+  ] = useState(true);
 
   const shouldReduceMotion =
     useReducedMotion();
 
   useEffect(() => {
-    const loadGallery = async () => {
-      try {
-        const hostname =
-          window.location.hostname;
+    if (
+      agencyLoading ||
+      !agency
+    ) {
+      return;
+    }
 
-        const items =
-          await getFeaturedGallery(
-            hostname
+    let isCancelled = false;
+
+    const loadGallery =
+      async () => {
+        try {
+          const hostname =
+            window.location.hostname;
+
+          const items =
+            await getFeaturedGallery(
+              hostname
+            );
+
+          if (!isCancelled) {
+            setGalleryItems(
+              items
+            );
+          }
+        } catch (error) {
+          console.error(
+            "Unable to load gallery:",
+            error
           );
-
-        setGalleryItems(items);
-      } catch (error) {
-        console.error(
-          "Unable to load gallery:",
-          error
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+        } finally {
+          if (!isCancelled) {
+            setGalleryLoading(
+              false
+            );
+          }
+        }
+      };
 
     loadGallery();
-  }, []);
 
-  if (loading) {
+    return () => {
+      isCancelled = true;
+    };
+  }, [
+    agency,
+    agencyLoading,
+  ]);
+
+  if (
+    agencyLoading ||
+    galleryLoading
+  ) {
     return null;
   }
 
-  if (galleryItems.length === 0) {
+  if (!agency) {
+    return null;
+  }
+
+  if (
+    galleryItems.length === 0
+  ) {
     return null;
   }
 
   return (
     <section className="bg-white py-10 md:py-12">
       <div className="mx-auto max-w-[1700px] px-4 sm:px-6 lg:px-8">
-
         {/* Heading */}
         <div className="flex items-end justify-between gap-4">
           <motion.div
@@ -86,7 +130,6 @@ const JourneyMoments = () => {
                 shouldReduceMotion
                   ? 0
                   : 0.7,
-
               ease: [
                 0.22,
                 1,
@@ -95,12 +138,19 @@ const JourneyMoments = () => {
               ],
             }}
           >
-            <h2 className="text-2xl font-bold text-[#06364a] md:text-3xl">
-              Moments from Our Journeys
+            <h2
+              className="text-2xl font-bold md:text-3xl"
+              style={{
+                color:
+                  agency.primaryColor,
+              }}
+            >
+              Moments from Our
+              Journeys
             </h2>
 
             <motion.div
-              className="mt-2 h-1 w-16 rounded-full bg-[#ea580c]"
+              className="mt-2 h-1 w-16 rounded-full"
               initial={
                 shouldReduceMotion
                   ? false
@@ -121,12 +171,10 @@ const JourneyMoments = () => {
                   shouldReduceMotion
                     ? 0
                     : 0.55,
-
                 delay:
                   shouldReduceMotion
                     ? 0
                     : 0.15,
-
                 ease: [
                   0.22,
                   1,
@@ -135,7 +183,10 @@ const JourneyMoments = () => {
                 ],
               }}
               style={{
-                transformOrigin: "left",
+                backgroundColor:
+                  agency.accentColor,
+                transformOrigin:
+                  "left",
               }}
             />
           </motion.div>
@@ -162,12 +213,10 @@ const JourneyMoments = () => {
                 shouldReduceMotion
                   ? 0
                   : 0.65,
-
               delay:
                 shouldReduceMotion
                   ? 0
                   : 0.15,
-
               ease: [
                 0.22,
                 1,
@@ -178,7 +227,23 @@ const JourneyMoments = () => {
           >
             <Link
               href="/gallery"
-              className="group hidden items-center whitespace-nowrap text-sm font-semibold text-[#06364a] transition-colors hover:text-[#ea580c] sm:inline-flex"
+              className="group hidden items-center whitespace-nowrap text-sm font-semibold transition-colors sm:inline-flex"
+              style={{
+                color:
+                  agency.primaryColor,
+              }}
+              onMouseEnter={(
+                event
+              ) => {
+                event.currentTarget.style.color =
+                  agency.accentColor;
+              }}
+              onMouseLeave={(
+                event
+              ) => {
+                event.currentTarget.style.color =
+                  agency.primaryColor;
+              }}
             >
               View Full Gallery
 
@@ -230,13 +295,11 @@ const JourneyMoments = () => {
                     shouldReduceMotion
                       ? 0
                       : 0.75,
-
                   delay:
                     shouldReduceMotion
                       ? 0
                       : index *
                         0.11,
-
                   ease: [
                     0.22,
                     1,
@@ -255,7 +318,9 @@ const JourneyMoments = () => {
                 className="group overflow-hidden rounded-xl shadow-sm"
               >
                 <motion.img
-                  src={item.imageUrl}
+                  src={
+                    item.imageUrl
+                  }
                   alt={
                     item.caption ||
                     "Journey moment"
@@ -301,7 +366,6 @@ const JourneyMoments = () => {
               shouldReduceMotion
                 ? 0
                 : 0.55,
-
             delay:
               shouldReduceMotion
                 ? 0
@@ -310,7 +374,23 @@ const JourneyMoments = () => {
         >
           <Link
             href="/gallery"
-            className="inline-flex items-center gap-1 text-sm font-semibold text-[#06364a] transition-colors hover:text-[#ea580c]"
+            className="inline-flex items-center gap-1 text-sm font-semibold transition-colors"
+            style={{
+              color:
+                agency.primaryColor,
+            }}
+            onMouseEnter={(
+              event
+            ) => {
+              event.currentTarget.style.color =
+                agency.accentColor;
+            }}
+            onMouseLeave={(
+              event
+            ) => {
+              event.currentTarget.style.color =
+                agency.primaryColor;
+            }}
           >
             View Full Gallery
             <span>→</span>

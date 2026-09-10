@@ -69,6 +69,78 @@ const featuredDestinationSchema =
   );
 
 /* =========================================
+   WHY CHOOSE US BENEFIT
+========================================= */
+
+const whyChooseBenefitSchema =
+  new mongoose.Schema(
+    {
+      icon: {
+        type: String,
+        default: "",
+        trim: true,
+        lowercase: true,
+      },
+
+      title: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      description: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+    },
+    {
+      _id: false,
+    }
+  );
+
+/* =========================================
+   WHY CHOOSE US
+========================================= */
+
+const whyChooseUsSchema =
+  new mongoose.Schema(
+    {
+      label: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      heading: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      description: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      backgroundImage: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      benefits: {
+        type: [whyChooseBenefitSchema],
+        default: [],
+      },
+    },
+    {
+      _id: false,
+    }
+  );
+
+/* =========================================
    ABOUT HERO
 ========================================= */
 
@@ -460,6 +532,19 @@ const agencySchema =
           default: [],
         },
       },
+
+      /* =====================================
+         WHY CHOOSE US
+      ===================================== */
+
+      whyChooseUs: {
+        type: whyChooseUsSchema,
+        default: () => ({}),
+      },
+
+      /* =====================================
+         ABOUT
+      ===================================== */
 
       about: {
         type: aboutSchema,

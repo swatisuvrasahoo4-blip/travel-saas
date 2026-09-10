@@ -1,49 +1,22 @@
 import Link from "next/link";
 
 import {
-  useEffect,
-  useState,
-} from "react";
-
-import {
   motion,
   useReducedMotion,
 } from "motion/react";
 
-import {
-  Agency,
-  getAgencyByDomain,
-} from "@/services/agencyService";
+import { useAgency } from "@/context/AgencyContext";
 
 const FeaturedDestinations = () => {
-  const [agency, setAgency] =
-    useState<Agency | null>(null);
+  const { agency, loading } =
+    useAgency();
 
   const shouldReduceMotion =
     useReducedMotion();
 
-  useEffect(() => {
-    const loadAgency = async () => {
-      try {
-        const hostname =
-          window.location.hostname;
-
-        const agencyData =
-          await getAgencyByDomain(
-            hostname
-          );
-
-        setAgency(agencyData);
-      } catch (error) {
-        console.error(
-          "Unable to load featured destinations:",
-          error
-        );
-      }
-    };
-
-    loadAgency();
-  }, []);
+  if (loading) {
+    return null;
+  }
 
   if (!agency) {
     return null;
@@ -59,7 +32,6 @@ const FeaturedDestinations = () => {
   return (
     <section className="w-full bg-white py-12 md:py-16">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-
         {/* Section Heading */}
         <motion.div
           className="mb-8 text-center md:mb-10"
@@ -126,11 +98,9 @@ const FeaturedDestinations = () => {
               duration: shouldReduceMotion
                 ? 0
                 : 0.6,
-
               delay: shouldReduceMotion
                 ? 0
                 : 0.15,
-
               ease: [
                 0.22,
                 1,
@@ -179,13 +149,10 @@ const FeaturedDestinations = () => {
                       shouldReduceMotion
                         ? 0
                         : 0.8,
-
                     delay:
                       shouldReduceMotion
                         ? 0
-                        : index *
-                          0.14,
-
+                        : index * 0.14,
                     ease: [
                       0.22,
                       1,

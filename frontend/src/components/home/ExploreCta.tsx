@@ -6,49 +6,24 @@ import {
 import Link from "next/link";
 
 import {
-  useEffect,
-  useState,
-} from "react";
-
-import {
   motion,
   useReducedMotion,
 } from "motion/react";
 
-import {
-  Agency,
-  getAgencyByDomain,
-} from "@/services/agencyService";
+import { useAgency } from "@/context/AgencyContext";
 
 const ExploreCta = () => {
-  const [agency, setAgency] =
-    useState<Agency | null>(null);
+  const {
+    agency,
+    loading,
+  } = useAgency();
 
   const shouldReduceMotion =
     useReducedMotion();
 
-  useEffect(() => {
-    const loadAgency = async () => {
-      try {
-        const hostname =
-          window.location.hostname;
-
-        const agencyData =
-          await getAgencyByDomain(
-            hostname
-          );
-
-        setAgency(agencyData);
-      } catch (error) {
-        console.error(
-          "Unable to load CTA agency:",
-          error
-        );
-      }
-    };
-
-    loadAgency();
-  }, []);
+  if (loading) {
+    return null;
+  }
 
   if (!agency) {
     return null;
@@ -136,12 +111,10 @@ const ExploreCta = () => {
               shouldReduceMotion
                 ? 0
                 : 1.1,
-
             delay:
               shouldReduceMotion
                 ? 0
                 : 0.25,
-
             ease: [
               0.22,
               1,
@@ -186,12 +159,10 @@ const ExploreCta = () => {
               shouldReduceMotion
                 ? 0
                 : 1.1,
-
             delay:
               shouldReduceMotion
                 ? 0
                 : 0.45,
-
             ease: [
               0.22,
               1,
@@ -230,7 +201,6 @@ const ExploreCta = () => {
               }}
             >
               <Send size={18} />
-
               Enquire Now
             </Link>
           </motion.div>

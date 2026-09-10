@@ -18,14 +18,24 @@ import {
   useReducedMotion,
 } from "motion/react";
 
+import { useAgency } from "@/context/AgencyContext";
+
 import {
   getFeaturedReviews,
   Review,
 } from "@/services/reviewService";
 
 const TravellerReviews = () => {
+  const {
+    agency,
+    loading: agencyLoading,
+  } = useAgency();
+
   const [reviews, setReviews] =
     useState<Review[]>([]);
+
+  const [reviewsLoading, setReviewsLoading] =
+    useState(true);
 
   const [currentIndex, setCurrentIndex] =
     useState(0);
@@ -34,6 +44,13 @@ const TravellerReviews = () => {
     useReducedMotion();
 
   useEffect(() => {
+    if (
+      agencyLoading ||
+      !agency
+    ) {
+      return;
+    }
+
     let isCancelled = false;
 
     const loadReviews = async () => {
@@ -54,6 +71,10 @@ const TravellerReviews = () => {
           "Unable to load reviews:",
           error
         );
+      } finally {
+        if (!isCancelled) {
+          setReviewsLoading(false);
+        }
       }
     };
 
@@ -62,7 +83,21 @@ const TravellerReviews = () => {
     return () => {
       isCancelled = true;
     };
-  }, []);
+  }, [
+    agency,
+    agencyLoading,
+  ]);
+
+  if (
+    agencyLoading ||
+    reviewsLoading
+  ) {
+    return null;
+  }
+
+  if (!agency) {
+    return null;
+  }
 
   if (reviews.length === 0) {
     return null;
@@ -102,7 +137,6 @@ const TravellerReviews = () => {
   return (
     <section className="bg-white pb-16 pt-8 md:pb-20 md:pt-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-
         {/* Header */}
         <div className="mb-8 flex items-end justify-between gap-5 md:mb-10">
           <motion.div
@@ -135,12 +169,18 @@ const TravellerReviews = () => {
               ],
             }}
           >
-            <h2 className="text-3xl font-bold text-[#06364a] md:text-4xl">
+            <h2
+              className="text-3xl font-bold md:text-4xl"
+              style={{
+                color:
+                  agency.primaryColor,
+              }}
+            >
               What Our Travellers Say
             </h2>
 
             <motion.div
-              className="mt-2 h-1 w-16 rounded-full bg-[#ea580c]"
+              className="mt-2 h-1 w-16 rounded-full"
               initial={
                 shouldReduceMotion
                   ? false
@@ -173,7 +213,10 @@ const TravellerReviews = () => {
                 ],
               }}
               style={{
-                transformOrigin: "left",
+                backgroundColor:
+                  agency.accentColor,
+                transformOrigin:
+                  "left",
               }}
             />
           </motion.div>
@@ -214,7 +257,23 @@ const TravellerReviews = () => {
           >
             <Link
               href="/reviews"
-              className="group hidden items-center gap-2 text-sm font-semibold text-[#06364a] transition hover:text-[#ea580c] sm:inline-flex"
+              className="group hidden items-center gap-2 text-sm font-semibold transition sm:inline-flex"
+              style={{
+                color:
+                  agency.primaryColor,
+              }}
+              onMouseEnter={(
+                event
+              ) => {
+                event.currentTarget.style.color =
+                  agency.accentColor;
+              }}
+              onMouseLeave={(
+                event
+              ) => {
+                event.currentTarget.style.color =
+                  agency.primaryColor;
+              }}
             >
               View All Reviews
 
@@ -241,7 +300,6 @@ const TravellerReviews = () => {
 
         {/* Reviews */}
         <div className="relative px-0 md:px-12">
-
           {/* Previous Button */}
           <motion.button
             type="button"
@@ -265,7 +323,11 @@ const TravellerReviews = () => {
             transition={{
               duration: 0.2,
             }}
-            className="absolute left-0 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 bg-white text-[#06364a] shadow-sm transition-colors hover:border-[#ea580c] hover:text-[#ea580c] md:flex"
+            className="absolute left-0 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm transition-colors md:flex"
+            style={{
+              color:
+                agency.primaryColor,
+            }}
           >
             <ArrowLeft size={18} />
           </motion.button>
@@ -288,8 +350,7 @@ const TravellerReviews = () => {
                             x:
                               index === 0
                                 ? -24
-                                : index ===
-                                    2
+                                : index === 2
                                   ? 24
                                   : 0,
                             y: 18,
@@ -316,8 +377,7 @@ const TravellerReviews = () => {
                       delay:
                         shouldReduceMotion
                           ? 0
-                          : index *
-                            0.1,
+                          : index * 0.1,
                       ease: [
                         0.22,
                         1,
@@ -350,17 +410,21 @@ const TravellerReviews = () => {
                             shouldReduceMotion
                               ? undefined
                               : {
-                                  scale:
-                                    1.06,
+                                  scale: 1.06,
                                 }
                           }
                           transition={{
-                            duration:
-                              0.3,
+                            duration: 0.3,
                           }}
                         />
                       ) : (
-                        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#eef4f6] text-[#06364a]">
+                        <div
+                          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#eef4f6]"
+                          style={{
+                            color:
+                              agency.primaryColor,
+                          }}
+                        >
                           <UserRound
                             size={25}
                           />
@@ -368,7 +432,13 @@ const TravellerReviews = () => {
                       )}
 
                       <div>
-                        <h3 className="font-bold text-[#06364a]">
+                        <h3
+                          className="font-bold"
+                          style={{
+                            color:
+                              agency.primaryColor,
+                          }}
+                        >
                           {
                             review.customerName
                           }
@@ -410,7 +480,6 @@ const TravellerReviews = () => {
                           shouldReduceMotion
                             ? 0
                             : 0.4,
-
                         delay:
                           shouldReduceMotion
                             ? 0
@@ -420,8 +489,13 @@ const TravellerReviews = () => {
                       }}
                     >
                       {Array.from(
-                        { length: 5 },
-                        (_, starIndex) => (
+                        {
+                          length: 5,
+                        },
+                        (
+                          _,
+                          starIndex
+                        ) => (
                           <Star
                             key={
                               starIndex
@@ -466,7 +540,11 @@ const TravellerReviews = () => {
             transition={{
               duration: 0.2,
             }}
-            className="absolute right-0 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 bg-white text-[#06364a] shadow-sm transition-colors hover:border-[#ea580c] hover:text-[#ea580c] md:flex"
+            className="absolute right-0 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm transition-colors md:flex"
+            style={{
+              color:
+                agency.primaryColor,
+            }}
           >
             <ArrowRight size={18} />
           </motion.button>
@@ -488,7 +566,11 @@ const TravellerReviews = () => {
                       scale: 0.9,
                     }
               }
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-[#06364a]"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white"
+              style={{
+                color:
+                  agency.primaryColor,
+              }}
             >
               <ArrowLeft
                 size={18}
@@ -508,7 +590,11 @@ const TravellerReviews = () => {
                       scale: 0.9,
                     }
               }
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white text-[#06364a]"
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-white"
+              style={{
+                color:
+                  agency.primaryColor,
+              }}
             >
               <ArrowRight
                 size={18}
@@ -518,9 +604,14 @@ const TravellerReviews = () => {
 
           <Link
             href="/reviews"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-[#06364a]"
+            className="inline-flex items-center gap-2 text-sm font-semibold"
+            style={{
+              color:
+                agency.primaryColor,
+            }}
           >
             View All Reviews
+
             <ArrowRight
               size={16}
             />

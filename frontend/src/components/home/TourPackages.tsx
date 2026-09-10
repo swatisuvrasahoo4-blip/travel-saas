@@ -16,19 +16,38 @@ import {
   useReducedMotion,
 } from "motion/react";
 
+import { useAgency } from "@/context/AgencyContext";
+
 import {
   getFeaturedPackages,
   TourPackage,
 } from "@/services/packageService";
 
 const TourPackages = () => {
+  const {
+    agency,
+    loading: agencyLoading,
+  } = useAgency();
+
   const [packages, setPackages] =
     useState<TourPackage[]>([]);
+
+  const [
+    packagesLoading,
+    setPackagesLoading,
+  ] = useState(true);
 
   const shouldReduceMotion =
     useReducedMotion();
 
   useEffect(() => {
+    if (
+      agencyLoading ||
+      !agency
+    ) {
+      return;
+    }
+
     let isCancelled = false;
 
     const loadPackages = async () => {
@@ -49,6 +68,10 @@ const TourPackages = () => {
           "Unable to load featured packages:",
           error
         );
+      } finally {
+        if (!isCancelled) {
+          setPackagesLoading(false);
+        }
       }
     };
 
@@ -57,7 +80,21 @@ const TourPackages = () => {
     return () => {
       isCancelled = true;
     };
-  }, []);
+  }, [
+    agency,
+    agencyLoading,
+  ]);
+
+  if (
+    agencyLoading ||
+    packagesLoading
+  ) {
+    return null;
+  }
+
+  if (!agency) {
+    return null;
+  }
 
   if (packages.length === 0) {
     return null;
@@ -98,12 +135,18 @@ const TourPackages = () => {
               ],
             }}
           >
-            <h2 className="text-3xl font-bold text-[#06364a] md:text-4xl">
+            <h2
+              className="text-3xl font-bold md:text-4xl"
+              style={{
+                color:
+                  agency.primaryColor,
+              }}
+            >
               Our Tour Packages
             </h2>
 
             <motion.div
-              className="mt-2 h-1 w-16 rounded-full bg-[#ea580c]"
+              className="mt-2 h-1 w-16 rounded-full"
               initial={
                 shouldReduceMotion
                   ? false
@@ -124,12 +167,10 @@ const TourPackages = () => {
                   shouldReduceMotion
                     ? 0
                     : 0.55,
-
                 delay:
                   shouldReduceMotion
                     ? 0
                     : 0.15,
-
                 ease: [
                   0.22,
                   1,
@@ -138,7 +179,10 @@ const TourPackages = () => {
                 ],
               }}
               style={{
-                transformOrigin: "left",
+                backgroundColor:
+                  agency.accentColor,
+                transformOrigin:
+                  "left",
               }}
             />
 
@@ -171,12 +215,10 @@ const TourPackages = () => {
                 shouldReduceMotion
                   ? 0
                   : 0.65,
-
               delay:
                 shouldReduceMotion
                   ? 0
                   : 0.15,
-
               ease: [
                 0.22,
                 1,
@@ -187,7 +229,23 @@ const TourPackages = () => {
           >
             <Link
               href="/packages"
-              className="group inline-flex w-fit items-center gap-2 text-sm font-semibold text-[#06364a] transition hover:text-[#ea580c]"
+              className="group inline-flex w-fit items-center gap-2 text-sm font-semibold transition"
+              style={{
+                color:
+                  agency.primaryColor,
+              }}
+              onMouseEnter={(
+                event
+              ) => {
+                event.currentTarget.style.color =
+                  agency.accentColor;
+              }}
+              onMouseLeave={(
+                event
+              ) => {
+                event.currentTarget.style.color =
+                  agency.primaryColor;
+              }}
             >
               View All Packages
 
@@ -244,13 +302,11 @@ const TourPackages = () => {
                     shouldReduceMotion
                       ? 0
                       : 0.78,
-
                   delay:
                     shouldReduceMotion
                       ? 0
                       : index *
                         0.13,
-
                   ease: [
                     0.22,
                     1,
@@ -263,7 +319,8 @@ const TourPackages = () => {
                     ? undefined
                     : {
                         y: -7,
-                        scale: 1.012,
+                        scale:
+                          1.012,
                       }
                 }
                 className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow duration-300 hover:shadow-lg"
@@ -286,12 +343,15 @@ const TourPackages = () => {
                         shouldReduceMotion
                           ? undefined
                           : {
-                              scale: 1.07,
+                              scale:
+                                1.07,
                             }
                       }
                       transition={{
-                        duration: 0.6,
-                        ease: "easeOut",
+                        duration:
+                          0.6,
+                        ease:
+                          "easeOut",
                       }}
                     />
 
@@ -304,7 +364,25 @@ const TourPackages = () => {
                   <Link
                     href={`/packages/${tourPackage.slug}`}
                   >
-                    <h3 className="text-lg font-bold leading-6 text-[#06364a] transition hover:text-[#ea580c]">
+                    <h3
+                      className="text-lg font-bold leading-6 transition"
+                      style={{
+                        color:
+                          agency.primaryColor,
+                      }}
+                      onMouseEnter={(
+                        event
+                      ) => {
+                        event.currentTarget.style.color =
+                          agency.accentColor;
+                      }}
+                      onMouseLeave={(
+                        event
+                      ) => {
+                        event.currentTarget.style.color =
+                          agency.primaryColor;
+                      }}
+                    >
                       {
                         tourPackage.name
                       }
@@ -315,7 +393,11 @@ const TourPackages = () => {
                     <div className="flex items-center gap-2">
                       <Clock3
                         size={16}
-                        className="shrink-0 text-[#ea580c]"
+                        className="shrink-0"
+                        style={{
+                          color:
+                            agency.accentColor,
+                        }}
                       />
 
                       <span>
@@ -328,7 +410,11 @@ const TourPackages = () => {
                     <div className="flex items-start gap-2">
                       <MapPin
                         size={16}
-                        className="mt-0.5 shrink-0 text-[#ea580c]"
+                        className="mt-0.5 shrink-0"
+                        style={{
+                          color:
+                            agency.accentColor,
+                        }}
                       />
 
                       <span className="line-clamp-2">
@@ -339,7 +425,9 @@ const TourPackages = () => {
                             ) =>
                               destination.name
                           )
-                          .join(", ")}
+                          .join(
+                            ", "
+                          )}
                       </span>
                     </div>
                   </div>
@@ -349,7 +437,23 @@ const TourPackages = () => {
                     <div className="flex items-center justify-between gap-1.5 border-t border-gray-100 pt-3">
                       <Link
                         href={`/packages/${tourPackage.slug}`}
-                        className="whitespace-nowrap text-xs font-semibold text-[#06364a] transition hover:text-[#ea580c]"
+                        className="whitespace-nowrap text-xs font-semibold transition"
+                        style={{
+                          color:
+                            agency.primaryColor,
+                        }}
+                        onMouseEnter={(
+                          event
+                        ) => {
+                          event.currentTarget.style.color =
+                            agency.accentColor;
+                        }}
+                        onMouseLeave={(
+                          event
+                        ) => {
+                          event.currentTarget.style.color =
+                            agency.primaryColor;
+                        }}
                       >
                         View Details
                       </Link>
@@ -381,12 +485,18 @@ const TourPackages = () => {
                           href={`/enquiry?package=${encodeURIComponent(
                             tourPackage.slug
                           )}`}
-                          className="inline-flex items-center gap-1 whitespace-nowrap rounded-lg bg-[#ea580c] px-2.5 py-2 text-xs font-semibold text-white transition hover:opacity-90"
+                          className="inline-flex items-center gap-1 whitespace-nowrap rounded-lg px-2.5 py-2 text-xs font-semibold text-white transition hover:opacity-90"
+                          style={{
+                            backgroundColor:
+                              agency.accentColor,
+                          }}
                         >
                           Enquire Now
 
                           <ArrowRight
-                            size={13}
+                            size={
+                              13
+                            }
                           />
                         </Link>
                       </motion.div>
@@ -422,13 +532,11 @@ const TourPackages = () => {
                 shouldReduceMotion
                   ? 0
                   : 0.85,
-
               delay:
                 shouldReduceMotion
                   ? 0
                   : packages.length *
                     0.13,
-
               ease: [
                 0.22,
                 1,
@@ -441,7 +549,8 @@ const TourPackages = () => {
                 ? undefined
                 : {
                     y: -7,
-                    scale: 1.012,
+                    scale:
+                      1.012,
                   }
             }
             className="relative flex min-h-[390px] overflow-hidden rounded-2xl border border-orange-100 bg-cover bg-center shadow-sm transition-shadow duration-300 hover:shadow-lg"
@@ -453,7 +562,13 @@ const TourPackages = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/76 to-transparent" />
 
             <div className="relative z-10 flex h-full max-w-[80%] flex-col justify-center p-6">
-              <h3 className="text-2xl font-bold leading-tight text-[#06364a]">
+              <h3
+                className="text-2xl font-bold leading-tight"
+                style={{
+                  color:
+                    agency.primaryColor,
+                }}
+              >
                 Need a Custom
                 <br />
                 Tour Plan?
@@ -474,23 +589,32 @@ const TourPackages = () => {
                     ? undefined
                     : {
                         y: -2,
-                        scale: 1.035,
+                        scale:
+                          1.035,
                       }
                 }
                 whileTap={
                   shouldReduceMotion
                     ? undefined
                     : {
-                        scale: 0.97,
+                        scale:
+                          0.97,
                       }
                 }
                 transition={{
-                  duration: 0.2,
+                  duration:
+                    0.2,
                 }}
               >
                 <Link
                   href="/plan-my-trip"
-                  className="inline-flex w-fit items-center gap-2 whitespace-nowrap rounded-lg bg-[#f59e0b] px-5 py-3 text-sm font-bold text-[#06364a] transition hover:bg-[#ea8c00]"
+                  className="inline-flex w-fit items-center gap-2 whitespace-nowrap rounded-lg px-5 py-3 text-sm font-bold transition hover:opacity-90"
+                  style={{
+                    backgroundColor:
+                      agency.accentColor,
+                    color:
+                      agency.primaryColor,
+                  }}
                 >
                   Plan My Trip
 

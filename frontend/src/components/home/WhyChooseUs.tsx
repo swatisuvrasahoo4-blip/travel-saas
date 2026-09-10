@@ -13,56 +13,46 @@ import {
 
 import { useAgency } from "@/context/AgencyContext";
 
+/* =========================================
+   ICON MAP
+========================================= */
+
+const iconMap = {
+  gem: Gem,
+  users: Users,
+  "shield-check": ShieldCheck,
+  headphones: Headphones,
+  heart: Heart,
+};
+
 const WhyChooseUs = () => {
   const { agency } = useAgency();
 
   const shouldReduceMotion =
     useReducedMotion();
 
-  const benefits = [
-    {
-      title: "Local Expertise",
-      description:
-        "Based in Odisha, we know it best",
-      icon: Gem,
-    },
-    {
-      title: "Personalized Trips",
-      description:
-        "Crafted as per your interests",
-      icon: Users,
-    },
-    {
-      title: "Trusted & Reliable",
-      description:
-        "Your safety is our priority",
-      icon: ShieldCheck,
-    },
-    {
-      title: "24/7 Support",
-      description:
-        "Always here for you",
-      icon: Headphones,
-    },
-    {
-      title: "Memorable Experiences",
-      description:
-        "More than trips, we create memories",
-      icon: Heart,
-    },
-  ];
+  const whyChooseUs =
+    agency?.whyChooseUs;
+
+  if (
+    !whyChooseUs ||
+    !whyChooseUs.benefits?.length
+  ) {
+    return null;
+  }
 
   return (
     <section
       className="relative overflow-hidden bg-[#eef8fc] bg-cover bg-center py-12 md:py-14"
       style={{
         backgroundImage:
-          "url('/images/why-choose-bg.png')",
+          whyChooseUs.backgroundImage
+            ? `url('${whyChooseUs.backgroundImage}')`
+            : undefined,
       }}
     >
       <div className="relative z-10 mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8">
         <div className="w-full lg:max-w-[72%] xl:max-w-[70%]">
-
           {/* Heading */}
           <motion.div
             initial={
@@ -97,10 +87,8 @@ const WhyChooseUs = () => {
             }}
           >
             <h2 className="text-center text-3xl font-bold text-[#06364a] sm:text-left md:text-4xl">
-              Why Choose{" "}
-              {agency?.name ||
-                "Time Travels"}
-              ?
+              {whyChooseUs.heading ||
+                `Why Choose ${agency.name}?`}
             </h2>
 
             <motion.div
@@ -142,96 +130,135 @@ const WhyChooseUs = () => {
             />
           </motion.div>
 
+          {/* Optional Description */}
+          {whyChooseUs.description && (
+            <motion.p
+              className="mt-4 max-w-2xl text-center text-sm leading-6 text-gray-600 sm:text-left"
+              initial={
+                shouldReduceMotion
+                  ? false
+                  : {
+                      opacity: 0,
+                      y: 12,
+                    }
+              }
+              whileInView={{
+                opacity: 1,
+                y: 0,
+              }}
+              viewport={{
+                once: true,
+                amount: 0.4,
+              }}
+              transition={{
+                duration:
+                  shouldReduceMotion
+                    ? 0
+                    : 0.7,
+                delay:
+                  shouldReduceMotion
+                    ? 0
+                    : 0.2,
+              }}
+            >
+              {whyChooseUs.description}
+            </motion.p>
+          )}
+
           {/* Benefits */}
           <div className="mt-10 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-5">
-            {benefits.map(
+            {whyChooseUs.benefits.map(
               (
                 {
                   title,
                   description,
-                  icon: Icon,
+                  icon,
                 },
                 index
-              ) => (
-                <motion.div
-                  key={title}
-                  initial={
-                    shouldReduceMotion
-                      ? false
-                      : {
-                          opacity: 0,
-                          y: 28,
-                        }
-                  }
-                  whileInView={{
-                    opacity: 1,
-                    y: 0,
-                  }}
-                  viewport={{
-                    once: true,
-                    amount: 0.3,
-                  }}
-                  transition={{
-                    duration:
-                      shouldReduceMotion
-                        ? 0
-                        : 0.7,
+              ) => {
+                const Icon =
+                  iconMap[
+                    icon as keyof typeof iconMap
+                  ] || Gem;
 
-                    delay:
-                      shouldReduceMotion
-                        ? 0
-                        : index *
-                          0.13,
-
-                    ease: [
-                      0.22,
-                      1,
-                      0.36,
-                      1,
-                    ],
-                  }}
-                  whileHover={
-                    shouldReduceMotion
-                      ? undefined
-                      : {
-                          y: -5,
-                        }
-                  }
-                  className="flex w-full flex-col items-center justify-start text-center"
-                >
-                  {/* Icon */}
+                return (
                   <motion.div
-                    className="flex h-12 w-12 shrink-0 items-center justify-center text-[#06364a]"
+                    key={`${title}-${index}`}
+                    initial={
+                      shouldReduceMotion
+                        ? false
+                        : {
+                            opacity: 0,
+                            y: 28,
+                          }
+                    }
+                    whileInView={{
+                      opacity: 1,
+                      y: 0,
+                    }}
+                    viewport={{
+                      once: true,
+                      amount: 0.3,
+                    }}
+                    transition={{
+                      duration:
+                        shouldReduceMotion
+                          ? 0
+                          : 0.7,
+                      delay:
+                        shouldReduceMotion
+                          ? 0
+                          : index * 0.13,
+                      ease: [
+                        0.22,
+                        1,
+                        0.36,
+                        1,
+                      ],
+                    }}
                     whileHover={
                       shouldReduceMotion
                         ? undefined
                         : {
-                            scale: 1.12,
-                            y: -2,
+                            y: -5,
                           }
                     }
-                    transition={{
-                      duration: 0.25,
-                      ease: "easeOut",
-                    }}
+                    className="flex w-full flex-col items-center justify-start text-center"
                   >
-                    <Icon
-                      size={34}
-                      strokeWidth={1.7}
-                    />
+                    {/* Icon */}
+                    <motion.div
+                      className="flex h-12 w-12 shrink-0 items-center justify-center text-[#06364a]"
+                      whileHover={
+                        shouldReduceMotion
+                          ? undefined
+                          : {
+                              scale: 1.12,
+                              y: -2,
+                            }
+                      }
+                      transition={{
+                        duration: 0.25,
+                        ease: "easeOut",
+                      }}
+                    >
+                      <Icon
+                        size={34}
+                        strokeWidth={1.7}
+                      />
+                    </motion.div>
+
+                    {/* Title */}
+                    <h3 className="mt-3 text-sm font-bold text-[#06364a]">
+                      {title}
+                    </h3>
+
+                    {/* Description */}
+                    <p className="mt-1 max-w-40 text-xs leading-5 text-gray-600">
+                      {description}
+                    </p>
                   </motion.div>
-
-                  {/* Title */}
-                  <h3 className="mt-3 text-sm font-bold text-[#06364a]">
-                    {title}
-                  </h3>
-
-                  {/* Description */}
-                  <p className="mt-1 max-w-40 text-xs leading-5 text-gray-600">
-                    {description}
-                  </p>
-                </motion.div>
-              )
+                );
+              }
             )}
           </div>
         </div>

@@ -17,6 +17,28 @@ export interface AgencyFeaturedDestination {
 }
 
 /* =========================================
+   WHY CHOOSE US BENEFIT
+========================================= */
+
+export interface AgencyWhyChooseBenefit {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+/* =========================================
+   WHY CHOOSE US
+========================================= */
+
+export interface AgencyWhyChooseUs {
+  label: string;
+  heading: string;
+  description: string;
+  backgroundImage: string;
+  benefits: AgencyWhyChooseBenefit[];
+}
+
+/* =========================================
    ABOUT HERO
 ========================================= */
 
@@ -85,24 +107,18 @@ export interface AgencyAboutCta {
 
 export interface AgencyAbout {
   hero: AgencyAboutHero;
-
   story: AgencyAboutStory;
-
   reasonsLabel: string;
   reasonsHeading: string;
   reasonsDescription: string;
   reasons: AgencyAboutReason[];
-
   statsBackgroundImage: string;
   stats: AgencyAboutStat[];
-
   missionVisionLabel: string;
   missionVisionTitle: string;
   missionVisionDescription: string;
-
   mission: AgencyMissionVisionItem;
   vision: AgencyMissionVisionItem;
-
   cta: AgencyAboutCta;
 }
 
@@ -112,43 +128,25 @@ export interface AgencyAbout {
 
 export interface Agency {
   _id: string;
-
   name: string;
-
   slug: string;
-
-  domain: string;
-
+  domains: string[];
   phone: string;
-
   email: string;
-
   address: string;
-
   tagline: string;
-
   logo: string;
-
   favicon: string;
-
   heroImage: string;
-
   servicesBackgroundImage: string;
-
   travelTypes?: AgencyTravelType[];
-
   featuredDestinations?: AgencyFeaturedDestination[];
-
   enquiryOptions?: AgencyEnquiryOptions;
-
+  whyChooseUs?: AgencyWhyChooseUs;
   about?: AgencyAbout;
-
   primaryColor: string;
-
   secondaryColor: string;
-
   accentColor: string;
-
   status: "active" | "inactive";
 }
 
