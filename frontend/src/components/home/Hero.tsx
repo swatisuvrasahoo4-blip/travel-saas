@@ -15,17 +15,15 @@ import {
 } from "motion/react";
 
 import {
-  useEffect,
   useRef,
   useState,
+  useEffect
 } from "react";
 
 import Link from "next/link";
 
-import {
-  Agency,
-  getAgencyByDomain,
-} from "@/services/agencyService";
+import { Agency } from "@/services/agencyService";
+import { useAgency } from "@/context/AgencyContext";
 
 interface DestinationFieldProps {
   destination: string;
@@ -94,7 +92,7 @@ const DestinationField = ({
           }
           placeholder="Where do you want to go?"
           autoComplete="off"
-          className="w-full bg-transparent text-sm font-medium text-gray-800 outline-none placeholder:text-gray-400"
+          className="w-full min-w-0 bg-transparent text-sm font-medium text-gray-800 outline-none placeholder:text-gray-400"
         />
 
         <motion.div
@@ -112,7 +110,7 @@ const DestinationField = ({
         >
           <ChevronDown
             size={17}
-            className="text-gray-400"
+            className="shrink-0 text-gray-400"
           />
         </motion.div>
       </div>
@@ -182,7 +180,7 @@ const DestinationField = ({
                           : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
                       }`}
                     >
-                      <span>
+                      <span className="min-w-0 truncate">
                         {item}
                       </span>
 
@@ -234,7 +232,7 @@ const DateField = ({
               event.target.value
             )
           }
-          className="w-full bg-transparent text-sm font-medium text-gray-800 outline-none"
+          className="w-full min-w-0 bg-transparent text-sm font-medium text-gray-800 outline-none"
         />
       </div>
     </div>
@@ -274,7 +272,7 @@ const TravellerField = ({
             )
           }
           placeholder="No. of travellers"
-          className="w-full bg-transparent text-sm font-medium text-gray-800 outline-none placeholder:text-gray-400"
+          className="w-full min-w-0 bg-transparent text-sm font-medium text-gray-800 outline-none placeholder:text-gray-400"
         />
       </div>
     </div>
@@ -319,7 +317,7 @@ const TripTypeField = ({
         onClick={() =>
           setIsOpen(!isOpen)
         }
-        className="flex w-full items-center justify-between gap-3 text-left"
+        className="flex w-full min-w-0 items-center justify-between gap-3 text-left"
       >
         <div className="flex min-w-0 items-center gap-3">
           <Search
@@ -423,7 +421,7 @@ const TripTypeField = ({
                           : "text-gray-700 hover:bg-orange-50 hover:text-orange-600"
                       }`}
                     >
-                      <span>
+                      <span className="min-w-0 truncate">
                         {item}
                       </span>
 
@@ -491,17 +489,10 @@ const EnquiryButton = ({
 };
 
 const Hero = () => {
-  const [
+  const {
     agency,
-    setAgency,
-  ] = useState<Agency | null>(
-    null
-  );
-
-  const [
     loading,
-    setLoading,
-  ] = useState(true);
+  } = useAgency();
 
   const [
     destination,
@@ -546,32 +537,9 @@ const Hero = () => {
       null
     );
 
-  useEffect(() => {
-    const loadAgency = async () => {
-      try {
-        const hostname =
-          window.location.hostname;
-
-        const agencyData =
-          await getAgencyByDomain(
-            hostname
-          );
-
-        setAgency(
-          agencyData
-        );
-      } catch (error) {
-        console.error(
-          "Unable to load hero agency:",
-          error
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadAgency();
-  }, []);
+  /* =========================================
+     CLOSE DROPDOWNS ON OUTSIDE CLICK
+  ========================================= */
 
   useEffect(() => {
     const handleOutsideClick = (
@@ -616,16 +584,29 @@ const Hero = () => {
     };
   }, []);
 
+  /* =========================================
+     AGENCY LOADING
+  ========================================= */
+
   if (loading) {
     return (
-      <section className="flex min-h-128 items-center justify-center bg-gray-100" />
+      <section className="flex min-h-128 items-center justify-center bg-gray-100">
+        <div
+          className="size-7 animate-spin rounded-full border-2 border-gray-300 border-t-orange-600"
+          aria-label="Loading"
+        />
+      </section>
     );
   }
 
+  /* =========================================
+     AGENCY NOT FOUND
+  ========================================= */
+
   if (!agency) {
     return (
-      <section className="flex min-h-128 items-center justify-center bg-gray-100">
-        <p className="text-sm text-gray-500">
+      <section className="flex min-h-128 items-center justify-center bg-gray-100 px-4">
+        <p className="text-center text-sm text-gray-500">
           Agency not found
         </p>
       </section>
@@ -657,7 +638,7 @@ const Hero = () => {
       }}
     >
       <div className="mx-auto flex min-h-128 max-w-7xl items-center px-4 py-12 sm:px-6 md:py-16 lg:px-8">
-        <div className="w-full">
+        <div className="w-full min-w-0">
           <motion.div
             className="max-w-2xl"
             initial={
@@ -857,7 +838,7 @@ const Hero = () => {
           </motion.div>
 
           <motion.div
-            className="relative z-50 mt-9 w-full"
+            className="relative z-50 mt-9 w-full min-w-0"
             initial={
               shouldReduceMotion
                 ? false
@@ -883,8 +864,8 @@ const Hero = () => {
             }}
           >
             <div className="overflow-visible rounded-2xl border border-white/60 bg-white/95 p-4 shadow-xl backdrop-blur-sm md:p-5">
-              <div className="grid gap-5 md:grid-cols-2 lg:flex lg:items-end lg:gap-0">
-                <div className="relative z-50 lg:flex-1 lg:border-r lg:border-gray-200 lg:px-5 lg:first:pl-0">
+              <div className="grid min-w-0 gap-5 md:grid-cols-2 lg:flex lg:items-end lg:gap-0">
+                <div className="relative z-50 min-w-0 lg:flex-1 lg:border-r lg:border-gray-200 lg:px-5 lg:first:pl-0">
                   <DestinationField
                     destination={
                       destination
@@ -907,7 +888,7 @@ const Hero = () => {
                   />
                 </div>
 
-                <div className="lg:flex-1 lg:border-r lg:border-gray-200 lg:px-5">
+                <div className="min-w-0 lg:flex-1 lg:border-r lg:border-gray-200 lg:px-5">
                   <DateField
                     travelDate={
                       travelDate
@@ -918,7 +899,7 @@ const Hero = () => {
                   />
                 </div>
 
-                <div className="lg:flex-1 lg:border-r lg:border-gray-200 lg:px-5">
+                <div className="min-w-0 lg:flex-1 lg:border-r lg:border-gray-200 lg:px-5">
                   <TravellerField
                     travellers={
                       travellers
@@ -929,7 +910,7 @@ const Hero = () => {
                   />
                 </div>
 
-                <div className="relative z-50 hidden lg:block lg:flex-1 lg:px-5">
+                <div className="relative z-50 hidden min-w-0 lg:block lg:flex-1 lg:px-5">
                   <TripTypeField
                     tripType={
                       tripType
@@ -952,7 +933,7 @@ const Hero = () => {
                   />
                 </div>
 
-                <div className="md:col-span-2 lg:col-span-1 lg:ml-4">
+                <div className="min-w-0 md:col-span-2 lg:col-span-1 lg:ml-4">
                   <EnquiryButton
                     accentColor={
                       agency.accentColor
