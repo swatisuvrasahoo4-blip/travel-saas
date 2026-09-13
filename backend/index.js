@@ -10,6 +10,8 @@ import helmet from "helmet";
 
 import rateLimit from "express-rate-limit";
 
+import cookieParser from "cookie-parser";
+
 import agencyRoutes from "./routes/agency.js";
 
 import destinationRoutes from "./routes/destination.js";
@@ -25,6 +27,16 @@ import vehicleRoutes from "./routes/vehicle.js";
 import contactMessageRoutes from "./routes/contactMessage.js";
 
 import enquiryRoutes from "./routes/enquiry.js";
+
+import adminAuthRoutes from "./routes/adminAuth.js";
+
+import adminDashboardRoutes from "./routes/adminDashboard.js";
+
+import adminEnquiryRoutes from "./routes/adminEnquiry.js";
+
+import adminTourRoutes from "./routes/adminTour.js";
+
+import adminTourCalendarRoutes from "./routes/adminTourCalendar.js";
 
 import connectDB from "./config/db.js";
 
@@ -84,11 +96,10 @@ app.use(
   cors({
     origin: (origin, callback) => {
       /*
-       * Allow requests without an Origin
-       * header, such as server-to-server
-       * requests.
+       * Allow requests without an
+       * Origin header, such as
+       * server-to-server requests.
        */
-
       if (!origin) {
         return callback(
           null,
@@ -97,9 +108,9 @@ app.use(
       }
 
       /*
-       * Allow configured frontend domains.
+       * Allow configured frontend
+       * domains only.
        */
-
       if (
         allowedOrigins.includes(
           origin
@@ -114,7 +125,6 @@ app.use(
       /*
        * Block unknown origins.
        */
-
       return callback(
         new Error(
           "Not allowed by CORS"
@@ -134,6 +144,7 @@ app.use(
     allowedHeaders: [
       "Content-Type",
       "Authorization",
+      "X-CSRF-Token",
     ],
 
     credentials: true,
@@ -144,23 +155,28 @@ app.use(
    GLOBAL RATE LIMIT
 ========================================= */
 
-const apiLimiter = rateLimit({
-  windowMs:
-    15 * 60 * 1000,
+const apiLimiter =
+  rateLimit({
+    windowMs:
+      15 *
+      60 *
+      1000,
 
-  limit: 300,
+    limit: 300,
 
-  standardHeaders:
-    "draft-8",
+    standardHeaders:
+      "draft-8",
 
-  legacyHeaders: false,
+    legacyHeaders:
+      false,
 
-  message: {
-    success: false,
-    message:
-      "Too many requests. Please try again later.",
-  },
-});
+    message: {
+      success: false,
+
+      message:
+        "Too many requests. Please try again later.",
+    },
+  });
 
 app.use(apiLimiter);
 
@@ -182,17 +198,28 @@ app.use(
 );
 
 /* =========================================
+   COOKIE PARSER
+========================================= */
+
+app.use(
+  cookieParser()
+);
+
+/* =========================================
    HEALTH ROUTE
 ========================================= */
 
 app.get(
   "/",
   (req, res) => {
-    res.status(200).json({
-      success: true,
-      message:
-        "Travel SaaS backend is running",
-    });
+    res
+      .status(200)
+      .json({
+        success: true,
+
+        message:
+          "Travel SaaS backend is running",
+      });
   }
 );
 
@@ -240,17 +267,45 @@ app.use(
   enquiryRoutes
 );
 
+app.use(
+  "/admin-auth",
+  adminAuthRoutes
+);
+
+app.use(
+  "/admin-dashboard",
+  adminDashboardRoutes
+);
+
+app.use(
+  "/admin-enquiries",
+  adminEnquiryRoutes
+);
+
+app.use(
+  "/admin-tours",
+  adminTourRoutes
+);
+
+app.use(
+  "/admin-tour-calendar",
+  adminTourCalendarRoutes
+);
+
 /* =========================================
    404 HANDLER
 ========================================= */
 
 app.use(
   (req, res) => {
-    res.status(404).json({
-      success: false,
-      message:
-        "Route not found",
-    });
+    res
+      .status(404)
+      .json({
+        success: false,
+
+        message:
+          "Route not found",
+      });
   }
 );
 
@@ -268,9 +323,8 @@ app.use(
     console.error(error);
 
     /*
-     * CORS error
+     * CORS error.
      */
-
     if (
       error.message ===
       "Not allowed by CORS"
@@ -279,19 +333,20 @@ app.use(
         .status(403)
         .json({
           success: false,
+
           message:
             "Origin is not allowed.",
         });
     }
 
     /*
-     * General server error
+     * General server error.
      */
-
     return res
       .status(500)
       .json({
         success: false,
+
         message:
           "Internal server error",
       });

@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import Link from "next/link";
 
 import {
@@ -5,15 +7,20 @@ import {
   useReducedMotion,
 } from "motion/react";
 
-import { useAgency } from "@/context/AgencyContext";
+import {
+  useAgency,
+} from "@/context/AgencyContext";
 
 const AboutStory = () => {
   const shouldReduceMotion =
     useReducedMotion();
 
-  const { agency } = useAgency();
+  const {
+    agency,
+  } = useAgency();
 
-  const story = agency?.about?.story;
+  const story =
+    agency?.about?.story;
 
   if (!story) {
     return null;
@@ -25,7 +32,8 @@ const AboutStory = () => {
       className="bg-[#fffaf3] py-14 md:py-20"
     >
       <div className="mx-auto grid max-w-[1700px] items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8">
-        {/* Image */}
+        {/* IMAGE */}
+
         <motion.div
           initial={
             shouldReduceMotion
@@ -57,11 +65,13 @@ const AboutStory = () => {
           }}
           className="relative"
         >
-          <div className="overflow-hidden rounded-2xl shadow-lg">
-            <img
+          <div className="relative aspect-4/3 overflow-hidden rounded-2xl shadow-lg">
+            <Image
               src={story.image}
               alt={story.title}
-              className="aspect-4/3 size-full object-cover"
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover"
             />
           </div>
 
@@ -103,7 +113,8 @@ const AboutStory = () => {
           </motion.div>
         </motion.div>
 
-        {/* Content */}
+        {/* CONTENT */}
+
         <motion.div
           initial={
             shouldReduceMotion
@@ -174,14 +185,18 @@ const AboutStory = () => {
               ],
             }}
             style={{
-              transformOrigin: "left",
+              transformOrigin:
+                "left",
             }}
             className="mt-4 h-1 w-16 rounded-full bg-[#ff681f]"
           />
 
           <div className="mt-6 space-y-4">
             {story.paragraphs.map(
-              (paragraph, index) => (
+              (
+                paragraph,
+                index
+              ) => (
                 <p
                   key={`${index}-${paragraph}`}
                   className="text-sm leading-7 text-gray-600 md:text-base"

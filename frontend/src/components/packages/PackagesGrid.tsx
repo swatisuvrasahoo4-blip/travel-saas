@@ -8,7 +8,9 @@ import {
   useReducedMotion,
 } from "motion/react";
 
-import { useAgency } from "@/context/AgencyContext";
+import {
+  useAgency,
+} from "@/context/AgencyContext";
 
 import TourPackageCard from "@/components/packages/TourPackageCard";
 
@@ -17,7 +19,15 @@ import {
   type TourPackage,
 } from "@/services/packageService";
 
-const PackagesGrid = () => {
+interface PackagesGridProps {
+  onLoadingChange?: (
+    isLoading: boolean
+  ) => void;
+}
+
+const PackagesGrid = ({
+  onLoadingChange,
+}: PackagesGridProps) => {
   const {
     agency,
     loading: agencyLoading,
@@ -37,6 +47,17 @@ const PackagesGrid = () => {
   ] = useState(true);
 
   useEffect(() => {
+    onLoadingChange?.(
+      agencyLoading ||
+        packagesLoading
+    );
+  }, [
+    agencyLoading,
+    packagesLoading,
+    onLoadingChange,
+  ]);
+
+  useEffect(() => {
     if (
       agencyLoading ||
       !agency
@@ -46,36 +67,43 @@ const PackagesGrid = () => {
 
     let isCancelled = false;
 
-    const loadPackages = async () => {
-      try {
-        setPackagesLoading(true);
+    const loadPackages =
+      async () => {
+        try {
+          setPackagesLoading(true);
 
-        const hostname =
-          window.location.hostname;
+          const hostname =
+            window.location.hostname;
 
-        const packageData =
-          await getPackages(hostname);
+          const packageData =
+            await getPackages(
+              hostname
+            );
 
-        if (!isCancelled) {
-          setPackages(packageData);
+          if (!isCancelled) {
+            setPackages(
+              packageData
+            );
+          }
+        } catch (error) {
+          console.error(
+            "Unable to load tour packages:",
+            error
+          );
+
+          if (!isCancelled) {
+            setPackages([]);
+          }
+        } finally {
+          if (!isCancelled) {
+            setPackagesLoading(
+              false
+            );
+          }
         }
-      } catch (error) {
-        console.error(
-          "Unable to load tour packages:",
-          error
-        );
+      };
 
-        if (!isCancelled) {
-          setPackages([]);
-        }
-      } finally {
-        if (!isCancelled) {
-          setPackagesLoading(false);
-        }
-      }
-    };
-
-    loadPackages();
+    void loadPackages();
 
     return () => {
       isCancelled = true;
@@ -120,9 +148,11 @@ const PackagesGrid = () => {
             amount: 0.15,
           }}
           transition={{
-            duration: shouldReduceMotion
-              ? 0
-              : 1,
+            duration:
+              shouldReduceMotion
+                ? 0
+                : 1,
+
             ease: [
               0.22,
               1,

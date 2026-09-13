@@ -14,7 +14,8 @@ export type EnquirySource =
   | "general"
   | "trip"
   | "destination"
-  | "package";
+  | "package"
+  | "cab";
 
 /* =========================================
    ENQUIRY DATA
@@ -26,14 +27,18 @@ export interface EnquiryData {
   destination?: string;
 
   packageName?: string;
-
   packageId?: string;
 
   travelDate?: string;
 
+  fromDate?: string;
+  toDate?: string;
+
   travellers?: string;
 
   tripType?: string;
+
+  vehicleType?: string;
 }
 
 /* =========================================
@@ -88,19 +93,20 @@ export const EnquiryProvider = ({
      OPEN
   ======================================= */
 
-  const openEnquiry = useCallback(
-    (
-      data: Partial<EnquiryData> = {}
-    ) => {
-      setEnquiryData({
-        ...defaultEnquiryData,
-        ...data,
-      });
+  const openEnquiry =
+    useCallback(
+      (
+        data: Partial<EnquiryData> = {}
+      ) => {
+        setEnquiryData({
+          ...defaultEnquiryData,
+          ...data,
+        });
 
-      setIsOpen(true);
-    },
-    []
-  );
+        setIsOpen(true);
+      },
+      []
+    );
 
   /* =======================================
      CLOSE
@@ -109,6 +115,10 @@ export const EnquiryProvider = ({
   const closeEnquiry =
     useCallback(() => {
       setIsOpen(false);
+
+      setEnquiryData(
+        defaultEnquiryData
+      );
     }, []);
 
   return (
@@ -131,7 +141,9 @@ export const EnquiryProvider = ({
 
 export const useEnquiry = () => {
   const context =
-    useContext(EnquiryContext);
+    useContext(
+      EnquiryContext
+    );
 
   if (!context) {
     throw new Error(

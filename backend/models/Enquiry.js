@@ -16,6 +16,7 @@ const enquirySchema =
           "trip",
           "destination",
           "package",
+          "cab",
         ],
         default: "general",
       },
@@ -62,7 +63,25 @@ const enquirySchema =
         default: "",
       },
 
+      fromDate: {
+        type: String,
+        trim: true,
+        default: "",
+      },
+
+      toDate: {
+        type: String,
+        trim: true,
+        default: "",
+      },
+
       travellers: {
+        type: String,
+        trim: true,
+        default: "",
+      },
+
+      vehicleType: {
         type: String,
         trim: true,
         default: "",
@@ -85,11 +104,13 @@ const enquirySchema =
         enum: [
           "new",
           "contacted",
+          "expired",
           "closed",
         ],
         default: "new",
       },
     },
+
     {
       timestamps: true,
     }

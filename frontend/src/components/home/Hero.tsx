@@ -20,6 +20,7 @@ import {
   useState,
 } from "react";
 
+import Image from "next/image";
 import Link from "next/link";
 
 import {
@@ -36,15 +37,21 @@ import {
 
 interface DestinationFieldProps {
   destination: string;
+
   setDestination: (
     value: string
   ) => void;
+
   destinations: string[];
+
   isOpen: boolean;
+
   setIsOpen: (
     value: boolean
   ) => void;
-  containerRef: React.RefObject<HTMLDivElement | null>;
+
+  containerRef:
+    React.RefObject<HTMLDivElement | null>;
 }
 
 const DestinationField = ({
@@ -218,6 +225,7 @@ const DestinationField = ({
 
 interface DateFieldProps {
   travelDate: string;
+
   setTravelDate: (
     value: string
   ) => void;
@@ -260,6 +268,7 @@ const DateField = ({
 
 interface TravellerFieldProps {
   travellers: string;
+
   setTravellers: (
     value: string
   ) => void;
@@ -304,15 +313,21 @@ const TravellerField = ({
 
 interface TripTypeFieldProps {
   tripType: string;
+
   setTripType: (
     value: string
   ) => void;
+
   tripTypes: string[];
+
   isOpen: boolean;
+
   setIsOpen: (
     value: boolean
   ) => void;
-  containerRef: React.RefObject<HTMLDivElement | null>;
+
+  containerRef:
+    React.RefObject<HTMLDivElement | null>;
 }
 
 const TripTypeField = ({
@@ -471,9 +486,13 @@ const TripTypeField = ({
 
 interface EnquiryButtonProps {
   accentColor: string;
+
   destination: string;
+
   travelDate: string;
+
   travellers: string;
+
   tripType: string;
 }
 
@@ -517,15 +536,19 @@ const EnquiryButton = ({
         onClick={() => {
           openEnquiry({
             source: "trip",
+
             destination:
               destination ||
               undefined,
+
             travelDate:
               travelDate ||
               undefined,
+
             travellers:
               travellers ||
               undefined,
+
             tripType:
               tripType ||
               undefined,
@@ -686,23 +709,36 @@ const Hero = () => {
     agency.enquiryOptions
       ?.tripTypes ?? [];
 
+  const heroImage =
+    agency.heroImage ||
+    "/images/hero.png";
+
   return (
-    <section
-      className="relative z-20 min-h-128 overflow-visible bg-cover bg-[85%_center] bg-no-repeat md:bg-center"
-      style={{
-        backgroundImage: `
-          linear-gradient(
-            90deg,
-            rgba(255,255,255,0.98) 0%,
-            rgba(255,255,255,0.92) 32%,
-            rgba(255,255,255,0.45) 58%,
-            rgba(255,255,255,0.08) 100%
-          ),
-          url("${agency.heroImage || "/images/hero.png"}")
-        `,
-      }}
-    >
-      <div className="mx-auto flex min-h-128 max-w-7xl items-center px-4 py-12 sm:px-6 md:py-16 lg:px-8">
+    <section className="relative z-20 min-h-128 overflow-visible">
+      {/* =====================================
+          OPTIMIZED HERO IMAGE
+      ===================================== */}
+
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <Image
+          src={heroImage}
+          alt={`${agency.name} travel`}
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-[85%_center] md:object-center"
+        />
+
+        {/* Hero gradient overlay */}
+
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.98)_0%,rgba(255,255,255,0.92)_32%,rgba(255,255,255,0.45)_58%,rgba(255,255,255,0.08)_100%)]" />
+      </div>
+
+      {/* =====================================
+          HERO CONTENT
+      ===================================== */}
+
+      <div className="relative z-10 mx-auto flex min-h-128 max-w-7xl items-center px-4 py-12 sm:px-6 md:py-16 lg:px-8">
         <div className="w-full min-w-0">
           <motion.div
             className="max-w-2xl"

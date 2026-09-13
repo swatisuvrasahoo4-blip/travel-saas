@@ -11,19 +11,33 @@ const API_URL =
 
 export interface CreateEnquiryPayload {
   hostname: string;
+
   source: EnquirySource;
 
   packageId?: string;
+
   packageName?: string;
 
   name: string;
+
   phone: string;
+
   email?: string;
 
   destination?: string;
+
   travelDate?: string;
+
+  fromDate?: string;
+
+  toDate?: string;
+
   travellers?: string;
+
+  vehicleType?: string;
+
   tripType?: string;
+
   message?: string;
 }
 

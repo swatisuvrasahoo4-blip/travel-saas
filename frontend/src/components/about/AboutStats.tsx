@@ -3,17 +3,40 @@ import {
   useReducedMotion,
 } from "motion/react";
 
-import { useAgency } from "@/context/AgencyContext";
+import {
+  useAgency,
+} from "@/context/AgencyContext";
 
 const AboutStats = () => {
   const shouldReduceMotion =
     useReducedMotion();
 
-  const { agency } = useAgency();
+  const { agency } =
+    useAgency();
 
-  const about = agency?.about;
+  const about =
+    agency?.about;
 
-  if (!about || about.stats.length === 0) {
+  if (!about) {
+    return null;
+  }
+
+  /*
+   * Do not display the
+   * "Years of Experience" stat.
+   */
+  const visibleStats =
+    about.stats.filter(
+      (stat) =>
+        stat.label
+          .trim()
+          .toLowerCase() !==
+        "years of experience"
+    );
+
+  if (
+    visibleStats.length === 0
+  ) {
     return null;
   }
 
@@ -21,17 +44,31 @@ const AboutStats = () => {
     <section
       className="relative overflow-hidden bg-cover bg-center py-12 md:py-14"
       style={{
-        backgroundImage: about.statsBackgroundImage
-          ? `url('${about.statsBackgroundImage}')`
-          : undefined,
+        backgroundImage:
+          about.statsBackgroundImage
+            ? `url('${about.statsBackgroundImage}')`
+            : undefined,
       }}
     >
       {/* Dark Overlay */}
+
       <div className="absolute inset-0 bg-[#06364a]/78" />
 
       <div className="relative z-10 mx-auto max-w-[1700px] px-4 sm:px-6 lg:px-8">
-        <div className="grid gap-8 text-center text-white sm:grid-cols-2 lg:grid-cols-4">
-          {about.stats.map(
+        <div
+          className={`grid gap-8 text-center text-white sm:grid-cols-2 ${
+            visibleStats.length >= 4
+              ? "lg:grid-cols-4"
+              : visibleStats.length ===
+                  3
+                ? "lg:grid-cols-3"
+                : visibleStats.length ===
+                    2
+                  ? "lg:grid-cols-2"
+                  : "lg:grid-cols-1"
+          }`}
+        >
+          {visibleStats.map(
             (stat, index) => (
               <motion.div
                 key={`${stat.label}-${index}`}
@@ -56,10 +93,13 @@ const AboutStats = () => {
                     shouldReduceMotion
                       ? 0
                       : 1,
+
                   delay:
                     shouldReduceMotion
                       ? 0
-                      : index * 0.12,
+                      : index *
+                        0.12,
+
                   ease: [
                     0.22,
                     1,
@@ -87,10 +127,12 @@ const AboutStats = () => {
                       shouldReduceMotion
                         ? 0
                         : 0.9,
+
                     delay:
                       shouldReduceMotion
                         ? 0
-                        : index * 0.12,
+                        : index *
+                          0.12,
                   }}
                   className="font-serif text-4xl font-bold sm:text-5xl"
                 >

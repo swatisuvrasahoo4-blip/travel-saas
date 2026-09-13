@@ -6,6 +6,8 @@ import {
   X,
 } from "lucide-react";
 
+import Image from "next/image";
+
 import Link from "next/link";
 
 import {
@@ -243,9 +245,12 @@ const Navbar = () => {
               className="flex min-w-0 items-center gap-3"
             >
               {agency.logo && (
-                <img
+                <Image
                   src={agency.logo}
                   alt={`${agency.name} logo`}
+                  width={44}
+                  height={44}
+                  sizes="44px"
                   className="size-11 shrink-0 object-contain"
                 />
               )}

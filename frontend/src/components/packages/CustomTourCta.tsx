@@ -1,13 +1,19 @@
-import Link from "next/link";
+import {
+  ArrowRight,
+} from "lucide-react";
 
 import {
   motion,
   useReducedMotion,
 } from "motion/react";
 
-import { ArrowRight } from "lucide-react";
+import {
+  useAgency,
+} from "@/context/AgencyContext";
 
-import { useAgency } from "@/context/AgencyContext";
+import {
+  useEnquiry,
+} from "@/components/enquiry/EnquiryProvider";
 
 const CustomTourCta = () => {
   const {
@@ -15,10 +21,17 @@ const CustomTourCta = () => {
     loading,
   } = useAgency();
 
+  const {
+    openEnquiry,
+  } = useEnquiry();
+
   const shouldReduceMotion =
     useReducedMotion();
 
-  if (loading || !agency) {
+  if (
+    loading ||
+    !agency
+  ) {
     return null;
   }
 
@@ -32,6 +45,13 @@ const CustomTourCta = () => {
   ) {
     return null;
   }
+
+  const handleCustomTourEnquiry =
+    () => {
+      openEnquiry({
+        source: "trip",
+      });
+    };
 
   return (
     <section className="bg-[#fffaf3] px-4 pb-16 sm:px-6 md:pb-20 lg:px-8">
@@ -66,10 +86,12 @@ const CustomTourCta = () => {
         }}
         className="relative mx-auto max-w-[1700px] overflow-hidden rounded-3xl bg-cover bg-center"
         style={{
-          backgroundImage: `url('${cta.image}')`,
+          backgroundImage:
+            `url('${cta.image}')`,
         }}
       >
         {/* Dynamic agency overlay */}
+
         <div
           className="absolute inset-0"
           style={{
@@ -186,54 +208,54 @@ const CustomTourCta = () => {
               </motion.p>
             )}
 
-            {cta.buttonText &&
-              cta.buttonLink && (
-                <motion.div
-                  initial={
+            {cta.buttonText && (
+              <motion.div
+                initial={
+                  shouldReduceMotion
+                    ? false
+                    : {
+                        opacity: 0,
+                        y: 16,
+                      }
+                }
+                whileInView={{
+                  opacity: 1,
+                  y: 0,
+                }}
+                viewport={{
+                  once: true,
+                }}
+                transition={{
+                  duration:
                     shouldReduceMotion
-                      ? false
-                      : {
-                          opacity: 0,
-                          y: 16,
-                        }
+                      ? 0
+                      : 1,
+                  delay:
+                    shouldReduceMotion
+                      ? 0
+                      : 0.38,
+                }}
+                className="mt-7"
+              >
+                <button
+                  type="button"
+                  onClick={
+                    handleCustomTourEnquiry
                   }
-                  whileInView={{
-                    opacity: 1,
-                    y: 0,
+                  className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white transition-transform duration-300 hover:-translate-y-0.5"
+                  style={{
+                    backgroundColor:
+                      agency.accentColor,
                   }}
-                  viewport={{
-                    once: true,
-                  }}
-                  transition={{
-                    duration:
-                      shouldReduceMotion
-                        ? 0
-                        : 1,
-                    delay:
-                      shouldReduceMotion
-                        ? 0
-                        : 0.38,
-                  }}
-                  className="mt-7"
                 >
-                  <Link
-                    href={
-                      cta.buttonLink
-                    }
-                    className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white transition-transform duration-300 hover:-translate-y-0.5"
-                    style={{
-                      backgroundColor:
-                        agency.accentColor,
-                    }}
-                  >
-                    {cta.buttonText}
+                  {cta.buttonText}
 
-                    <ArrowRight
-                      size={17}
-                    />
-                  </Link>
-                </motion.div>
-              )}
+                  <ArrowRight
+                    size={17}
+                  />
+                </button>
+              </motion.div>
+            )}
           </div>
         </div>
       </motion.div>
