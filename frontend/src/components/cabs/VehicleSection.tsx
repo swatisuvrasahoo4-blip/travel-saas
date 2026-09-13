@@ -21,10 +21,11 @@ const VehicleSection = ({
 
   return (
     <section className="bg-[#fffaf3] py-12 md:py-16">
-      <div className="mx-auto max-w-[1700px] px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-[1500px] px-5 sm:px-8 lg:px-10 xl:px-12">
         {/* =========================================
             SECTION HEADING
         ========================================== */}
+
         <motion.div
           initial={
             shouldReduceMotion
@@ -69,7 +70,6 @@ const VehicleSection = ({
             group tours and long journeys.
           </p>
 
-          {/* Accent Line */}
           <motion.div
             initial={
               shouldReduceMotion
@@ -108,6 +108,7 @@ const VehicleSection = ({
         {/* =========================================
             LOADING
         ========================================== */}
+
         {isLoading && (
           <div className="min-h-[300px]" />
         )}
@@ -115,6 +116,7 @@ const VehicleSection = ({
         {/* =========================================
             EMPTY STATE
         ========================================== */}
+
         {!isLoading &&
           vehicles.length === 0 && (
             <div className="py-16 text-center">
@@ -127,9 +129,10 @@ const VehicleSection = ({
         {/* =========================================
             VEHICLES
         ========================================== */}
+
         {!isLoading &&
           vehicles.length > 0 && (
-            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4 xl:gap-10">
               {vehicles.map(
                 (vehicle, index) => (
                   <motion.div
@@ -175,6 +178,7 @@ const VehicleSection = ({
                             y: -6,
                           }
                     }
+                    className="h-full"
                   >
                     <VehicleCard
                       vehicle={vehicle}
