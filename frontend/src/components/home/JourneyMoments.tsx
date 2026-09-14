@@ -10,11 +10,13 @@ import {
   useReducedMotion,
 } from "motion/react";
 
-import { useAgency } from "@/context/AgencyContext";
+import {
+  useAgency,
+} from "@/context/AgencyContext";
 
 import {
   GalleryItem,
-  getFeaturedGallery,
+  getGallery,
 } from "@/services/galleryService";
 
 const JourneyMoments = () => {
@@ -49,17 +51,19 @@ const JourneyMoments = () => {
     const loadGallery =
       async () => {
         try {
+          setGalleryLoading(true);
+
           const hostname =
             window.location.hostname;
 
           const items =
-            await getFeaturedGallery(
+            await getGallery(
               hostname
             );
 
           if (!isCancelled) {
             setGalleryItems(
-              items
+              items.slice(0, 6)
             );
           }
         } catch (error) {
@@ -67,6 +71,10 @@ const JourneyMoments = () => {
             "Unable to load gallery:",
             error
           );
+
+          if (!isCancelled) {
+            setGalleryItems([]);
+          }
         } finally {
           if (!isCancelled) {
             setGalleryLoading(
@@ -76,7 +84,7 @@ const JourneyMoments = () => {
         }
       };
 
-    loadGallery();
+    void loadGallery();
 
     return () => {
       isCancelled = true;
@@ -97,16 +105,11 @@ const JourneyMoments = () => {
     return null;
   }
 
-  if (
-    galleryItems.length === 0
-  ) {
-    return null;
-  }
-
   return (
     <section className="bg-white py-10 md:py-12">
       <div className="mx-auto max-w-[1700px] px-4 sm:px-6 lg:px-8">
         {/* Heading */}
+
         <div className="flex items-end justify-between gap-4">
           <motion.div
             initial={
@@ -192,210 +195,249 @@ const JourneyMoments = () => {
           </motion.div>
 
           {/* Desktop Gallery Link */}
-          <motion.div
-            initial={
-              shouldReduceMotion
-                ? false
-                : {
-                    opacity: 0,
-                    x: 20,
-                  }
-            }
-            whileInView={{
-              opacity: 1,
-              x: 0,
-            }}
-            viewport={{
-              once: true,
-            }}
-            transition={{
-              duration:
+
+          {galleryItems.length >
+            0 && (
+            <motion.div
+              initial={
                 shouldReduceMotion
-                  ? 0
-                  : 0.65,
-              delay:
-                shouldReduceMotion
-                  ? 0
-                  : 0.15,
-              ease: [
-                0.22,
-                1,
-                0.36,
-                1,
-              ],
-            }}
-          >
-            <Link
-              href="/gallery"
-              className="group hidden items-center whitespace-nowrap text-sm font-semibold transition-colors sm:inline-flex"
-              style={{
-                color:
-                  agency.primaryColor,
+                  ? false
+                  : {
+                      opacity: 0,
+                      x: 20,
+                    }
+              }
+              whileInView={{
+                opacity: 1,
+                x: 0,
               }}
-              onMouseEnter={(
-                event
-              ) => {
-                event.currentTarget.style.color =
-                  agency.accentColor;
+              viewport={{
+                once: true,
               }}
-              onMouseLeave={(
-                event
-              ) => {
-                event.currentTarget.style.color =
-                  agency.primaryColor;
+              transition={{
+                duration:
+                  shouldReduceMotion
+                    ? 0
+                    : 0.65,
+                delay:
+                  shouldReduceMotion
+                    ? 0
+                    : 0.15,
+                ease: [
+                  0.22,
+                  1,
+                  0.36,
+                  1,
+                ],
               }}
             >
-              View Full Gallery
-
-              <motion.span
-                className="ml-1 inline-block"
-                whileHover={
-                  shouldReduceMotion
-                    ? undefined
-                    : {
-                        x: 4,
-                      }
-                }
-                transition={{
-                  duration: 0.2,
+              <Link
+                href="/gallery"
+                className="group hidden items-center whitespace-nowrap text-sm font-semibold transition-colors sm:inline-flex"
+                style={{
+                  color:
+                    agency.primaryColor,
+                }}
+                onMouseEnter={(
+                  event
+                ) => {
+                  event.currentTarget.style.color =
+                    agency.accentColor;
+                }}
+                onMouseLeave={(
+                  event
+                ) => {
+                  event.currentTarget.style.color =
+                    agency.primaryColor;
                 }}
               >
-                →
-              </motion.span>
-            </Link>
-          </motion.div>
-        </div>
+                View Full Gallery
 
-        {/* Gallery */}
-        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {galleryItems.map(
-            (item, index) => (
-              <motion.div
-                key={item._id}
-                initial={
-                  shouldReduceMotion
-                    ? false
-                    : {
-                        opacity: 0,
-                        y: 26,
-                        scale: 0.96,
-                      }
-                }
-                whileInView={{
-                  opacity: 1,
-                  y: 0,
-                  scale: 1,
-                }}
-                viewport={{
-                  once: true,
-                  amount: 0.25,
-                }}
-                transition={{
-                  duration:
-                    shouldReduceMotion
-                      ? 0
-                      : 0.75,
-                  delay:
-                    shouldReduceMotion
-                      ? 0
-                      : index *
-                        0.11,
-                  ease: [
-                    0.22,
-                    1,
-                    0.36,
-                    1,
-                  ],
-                }}
-                whileHover={
-                  shouldReduceMotion
-                    ? undefined
-                    : {
-                        y: -5,
-                        scale: 1.015,
-                      }
-                }
-                className="group overflow-hidden rounded-xl shadow-sm"
-              >
-                <motion.img
-                  src={
-                    item.imageUrl
-                  }
-                  alt={
-                    item.caption ||
-                    "Journey moment"
-                  }
-                  className="h-36 w-full object-cover sm:h-40 lg:h-36 xl:h-40"
+                <motion.span
+                  className="ml-1 inline-block"
                   whileHover={
                     shouldReduceMotion
                       ? undefined
                       : {
-                          scale: 1.08,
+                          x: 4,
                         }
                   }
                   transition={{
-                    duration: 0.6,
-                    ease: "easeOut",
+                    duration: 0.2,
                   }}
-                />
-              </motion.div>
-            )
+                >
+                  →
+                </motion.span>
+              </Link>
+            </motion.div>
           )}
         </div>
 
-        {/* Mobile Gallery Link */}
-        <motion.div
-          className="mt-5 text-center sm:hidden"
-          initial={
-            shouldReduceMotion
-              ? false
-              : {
-                  opacity: 0,
-                  y: 12,
-                }
-          }
-          whileInView={{
-            opacity: 1,
-            y: 0,
-          }}
-          viewport={{
-            once: true,
-          }}
-          transition={{
-            duration:
-              shouldReduceMotion
-                ? 0
-                : 0.55,
-            delay:
-              shouldReduceMotion
-                ? 0
-                : 0.25,
-          }}
-        >
-          <Link
-            href="/gallery"
-            className="inline-flex items-center gap-1 text-sm font-semibold transition-colors"
-            style={{
-              color:
-                agency.primaryColor,
-            }}
-            onMouseEnter={(
-              event
-            ) => {
-              event.currentTarget.style.color =
-                agency.accentColor;
-            }}
-            onMouseLeave={(
-              event
-            ) => {
-              event.currentTarget.style.color =
-                agency.primaryColor;
-            }}
-          >
-            View Full Gallery
-            <span>→</span>
-          </Link>
-        </motion.div>
+        {/* Empty State */}
+
+        {galleryItems.length ===
+        0 ? (
+          <div className="mt-6 flex min-h-[220px] items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/60 px-6 text-center">
+            <div>
+              <p
+                className="text-base font-semibold"
+                style={{
+                  color:
+                    agency.primaryColor,
+                }}
+              >
+                No gallery images yet
+              </p>
+
+              <p className="mt-2 text-sm text-slate-500">
+                Journey moments will
+                appear here when they
+                are added.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Gallery */}
+
+            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+              {galleryItems.map(
+                (
+                  item,
+                  index
+                ) => (
+                  <motion.div
+                    key={item._id}
+                    initial={
+                      shouldReduceMotion
+                        ? false
+                        : {
+                            opacity: 0,
+                            y: 26,
+                            scale:
+                              0.96,
+                          }
+                    }
+                    whileInView={{
+                      opacity: 1,
+                      y: 0,
+                      scale: 1,
+                    }}
+                    viewport={{
+                      once: true,
+                      amount: 0.25,
+                    }}
+                    transition={{
+                      duration:
+                        shouldReduceMotion
+                          ? 0
+                          : 0.75,
+                      delay:
+                        shouldReduceMotion
+                          ? 0
+                          : index *
+                            0.11,
+                      ease: [
+                        0.22,
+                        1,
+                        0.36,
+                        1,
+                      ],
+                    }}
+                    whileHover={
+                      shouldReduceMotion
+                        ? undefined
+                        : {
+                            y: -5,
+                            scale:
+                              1.015,
+                          }
+                    }
+                    className="group overflow-hidden rounded-xl shadow-sm"
+                  >
+                    <motion.img
+                      src={
+                        item.imageUrl
+                      }
+                      alt={
+                        item.caption ||
+                        "Journey moment"
+                      }
+                      className="h-36 w-full object-cover sm:h-40 lg:h-36 xl:h-40"
+                      whileHover={
+                        shouldReduceMotion
+                          ? undefined
+                          : {
+                              scale:
+                                1.08,
+                            }
+                      }
+                      transition={{
+                        duration: 0.6,
+                        ease: "easeOut",
+                      }}
+                    />
+                  </motion.div>
+                )
+              )}
+            </div>
+
+            {/* Mobile Gallery Link */}
+
+            <motion.div
+              className="mt-5 text-center sm:hidden"
+              initial={
+                shouldReduceMotion
+                  ? false
+                  : {
+                      opacity: 0,
+                      y: 12,
+                    }
+              }
+              whileInView={{
+                opacity: 1,
+                y: 0,
+              }}
+              viewport={{
+                once: true,
+              }}
+              transition={{
+                duration:
+                  shouldReduceMotion
+                    ? 0
+                    : 0.55,
+                delay:
+                  shouldReduceMotion
+                    ? 0
+                    : 0.25,
+              }}
+            >
+              <Link
+                href="/gallery"
+                className="inline-flex items-center gap-1 text-sm font-semibold transition-colors"
+                style={{
+                  color:
+                    agency.primaryColor,
+                }}
+                onMouseEnter={(
+                  event
+                ) => {
+                  event.currentTarget.style.color =
+                    agency.accentColor;
+                }}
+                onMouseLeave={(
+                  event
+                ) => {
+                  event.currentTarget.style.color =
+                    agency.primaryColor;
+                }}
+              >
+                View Full Gallery
+                <span>→</span>
+              </Link>
+            </motion.div>
+          </>
+        )}
       </div>
     </section>
   );

@@ -1,41 +1,27 @@
 import dns from "dns/promises";
 
 import express from "express";
-
 import dotenv from "dotenv";
-
 import cors from "cors";
-
 import helmet from "helmet";
-
 import rateLimit from "express-rate-limit";
-
 import cookieParser from "cookie-parser";
 
 import agencyRoutes from "./routes/agency.js";
-
 import destinationRoutes from "./routes/destination.js";
-
 import packageRoutes from "./routes/package.js";
-
 import reviewRoutes from "./routes/review.js";
-
 import galleryRoutes from "./routes/gallery.js";
-
 import vehicleRoutes from "./routes/vehicle.js";
-
 import contactMessageRoutes from "./routes/contactMessage.js";
-
 import enquiryRoutes from "./routes/enquiry.js";
 
 import adminAuthRoutes from "./routes/adminAuth.js";
-
 import adminDashboardRoutes from "./routes/adminDashboard.js";
-
 import adminEnquiryRoutes from "./routes/adminEnquiry.js";
-
+import adminReviewRoutes from "./routes/adminReviews.js";
+import adminGalleryRoutes from "./routes/adminGallery.js";
 import adminTourRoutes from "./routes/adminTour.js";
-
 import adminTourCalendarRoutes from "./routes/adminTourCalendar.js";
 
 import connectDB from "./config/db.js";
@@ -100,6 +86,7 @@ app.use(
        * Origin header, such as
        * server-to-server requests.
        */
+
       if (!origin) {
         return callback(
           null,
@@ -111,6 +98,7 @@ app.use(
        * Allow configured frontend
        * domains only.
        */
+
       if (
         allowedOrigins.includes(
           origin
@@ -125,6 +113,7 @@ app.use(
       /*
        * Block unknown origins.
        */
+
       return callback(
         new Error(
           "Not allowed by CORS"
@@ -224,7 +213,7 @@ app.get(
 );
 
 /* =========================================
-   ROUTES
+   PUBLIC ROUTES
 ========================================= */
 
 app.use(
@@ -267,6 +256,10 @@ app.use(
   enquiryRoutes
 );
 
+/* =========================================
+   ADMIN ROUTES
+========================================= */
+
 app.use(
   "/admin-auth",
   adminAuthRoutes
@@ -280,6 +273,16 @@ app.use(
 app.use(
   "/admin-enquiries",
   adminEnquiryRoutes
+);
+
+app.use(
+  "/admin-reviews",
+  adminReviewRoutes
+);
+
+app.use(
+  "/admin-gallery",
+  adminGalleryRoutes
 );
 
 app.use(
@@ -325,6 +328,7 @@ app.use(
     /*
      * CORS error.
      */
+
     if (
       error.message ===
       "Not allowed by CORS"
@@ -342,6 +346,7 @@ app.use(
     /*
      * General server error.
      */
+
     return res
       .status(500)
       .json({

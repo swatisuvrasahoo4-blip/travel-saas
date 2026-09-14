@@ -1,12 +1,15 @@
 import {
   CalendarDays,
   Clock3,
+  Images,
   LayoutDashboard,
   LogOut,
   Mail,
   MessageSquareText,
+  Star,
   User,
 } from "lucide-react";
+
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -36,26 +39,43 @@ const AdminSidebar = ({
       href: "/admin/dashboard",
       icon: LayoutDashboard,
     },
+
     {
       label: "Enquiries",
       href: "/admin/enquiries",
       icon: MessageSquareText,
     },
+
+    {
+      label: "Reviews",
+      href: "/admin/reviews",
+      icon: Star,
+    },
+
+    {
+      label: "Gallery",
+      href: "/admin/gallery",
+      icon: Images,
+    },
+
     {
       label: "Tour Calendar",
       href: "/admin/calendar",
       icon: CalendarDays,
     },
+
     {
       label: "Tour History",
       href: "/admin/tour-history",
       icon: Clock3,
     },
+
     {
       label: "Contact Messages",
       href: "/admin/contact-messages",
       icon: Mail,
     },
+
     {
       label: "Profile",
       href: "/admin/profile",
@@ -95,7 +115,7 @@ const AdminSidebar = ({
 
           <h2 className="mt-1 text-lg font-semibold">
             {agency?.name ||
-              "Time Travels"}
+              "Travel Agency"}
           </h2>
         </div>
       </div>
@@ -111,15 +131,16 @@ const AdminSidebar = ({
           }) => {
             const isActive =
               router.pathname ===
-              href;
+                href ||
+              router.pathname.startsWith(
+                `${href}/`
+              );
 
             return (
               <Link
                 key={href}
                 href={href}
-                onClick={
-                  onClose
-                }
+                onClick={onClose}
                 className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${
                   isActive
                     ? "bg-white text-[#06364a]"

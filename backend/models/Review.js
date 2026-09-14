@@ -44,6 +44,20 @@ const reviewSchema =
         default: "website",
       },
 
+      /* =========================================
+         WEBSITE REVIEW AUTHOR DELETE TOKEN
+      ========================================= */
+
+      deleteTokenHash: {
+        type: String,
+        default: "",
+        select: false,
+      },
+
+      /* =========================================
+         GOOGLE REVIEW DATA
+      ========================================= */
+
       googleReviewId: {
         type: String,
         default: "",
@@ -55,6 +69,10 @@ const reviewSchema =
         default: "",
         trim: true,
       },
+
+      /* =========================================
+         REVIEW MODERATION
+      ========================================= */
 
       status: {
         type: String,
@@ -81,10 +99,35 @@ const reviewSchema =
     }
   );
 
+/* =========================================
+   INDEXES
+========================================= */
+
 reviewSchema.index({
   agencyId: 1,
   status: 1,
 });
+
+reviewSchema.index({
+  agencyId: 1,
+  source: 1,
+});
+
+reviewSchema.index(
+  {
+    agencyId: 1,
+    googleReviewId: 1,
+  },
+  {
+    unique: true,
+    partialFilterExpression: {
+      googleReviewId: {
+        $type: "string",
+        $gt: "",
+      },
+    },
+  }
+);
 
 const Review =
   mongoose.model(
