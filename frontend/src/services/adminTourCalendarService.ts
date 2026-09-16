@@ -14,68 +14,65 @@ export type CalendarTourStatus =
 
 export interface AdminCalendarTour {
   id: string;
-
   customerName: string;
   customerPhone: string;
-
   destination: string;
-
   pickupAddress: string;
   dropLocation: string;
-
   travellers: number;
-
   startDateTime: string;
   endDateTime: string;
-
   vehicleName: string;
   vehicleNumber: string;
-
   driverName: string;
   driverPhone: string;
-
   agreedPrice: number;
   advanceAmount: number;
   advancePaid: boolean;
-
   status: CalendarTourStatus;
-
   notes: string;
-
+  completedAt?: string | null;
   cancelledAt?: string | null;
   cancellationReason?: string;
 }
 
 interface AdminTourCalendarResponse {
   success: boolean;
-
   tours: AdminCalendarTour[];
 }
 
 interface CancelAdminTourResponse {
   success: boolean;
-
   message: string;
-
   tour: {
     id: string;
-
     customerName: string;
     customerPhone: string;
-
     destination: string;
-
     vehicleName: string;
     vehicleNumber: string;
-
     startDateTime: string;
     endDateTime: string;
-
     status: "cancelled";
-
     cancelledAt: string;
-
     cancellationReason: string;
+  };
+}
+
+interface CompleteAdminTourResponse {
+  success: boolean;
+  message: string;
+  tour: {
+    id: string;
+    customerName: string;
+    customerPhone: string;
+    destination: string;
+    vehicleName: string;
+    vehicleNumber: string;
+    startDateTime: string;
+    endDateTime: string;
+    status: "completed";
+    completedAt: string;
   };
 }
 
@@ -99,6 +96,31 @@ export const getAdminTourCalendar =
   };
 
 /* =========================================
+   COMPLETE TOUR
+========================================= */
+
+export const completeAdminTour =
+  async (
+    tourId: string,
+    csrfToken: string
+  ): Promise<CompleteAdminTourResponse> => {
+    const response =
+      await axios.patch<CompleteAdminTourResponse>(
+        `${API_URL}/admin-tours/${tourId}/complete`,
+        {},
+        {
+          withCredentials: true,
+          headers: {
+            "X-CSRF-Token":
+              csrfToken,
+          },
+        }
+      );
+
+    return response.data;
+  };
+
+/* =========================================
    CANCEL TOUR
 ========================================= */
 
@@ -116,7 +138,6 @@ export const cancelAdminTour =
         },
         {
           withCredentials: true,
-
           headers: {
             "X-CSRF-Token":
               csrfToken,

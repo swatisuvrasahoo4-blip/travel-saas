@@ -1209,3 +1209,229 @@ export const cancelTour =
         });
     }
   };
+
+/* =========================================
+   COMPLETE TOUR
+========================================= */
+
+export const completeTour =
+  async (
+    req,
+    res
+  ) => {
+    try {
+      const agencyId =
+        req.admin.agencyId;
+
+      const {
+        tourId,
+      } = req.params;
+
+      /* =====================================
+         VALIDATE TOUR ID
+      ===================================== */
+
+      if (
+        !mongoose.isValidObjectId(
+          tourId
+        )
+      ) {
+        return res
+          .status(400)
+          .json({
+            success: false,
+            message:
+              "Invalid tour ID.",
+          });
+      }
+
+      /* =====================================
+         FIND TOUR FOR THIS AGENCY
+      ===================================== */
+
+      const tour =
+        await Tour.findOne({
+          _id: tourId,
+          agencyId,
+        })
+          .select(
+            [
+              "_id",
+              "status",
+            ].join(" ")
+          )
+          .lean();
+
+      if (!tour) {
+        return res
+          .status(404)
+          .json({
+            success: false,
+            message:
+              "Tour not found.",
+          });
+      }
+
+      /* =====================================
+         ALREADY COMPLETED
+      ===================================== */
+
+      if (
+        tour.status ===
+        "completed"
+      ) {
+        return res
+          .status(409)
+          .json({
+            success: false,
+            message:
+              "This tour has already been completed.",
+          });
+      }
+
+      /* =====================================
+         ONLY CONFIRMED TOUR CAN
+         BE COMPLETED
+      ===================================== */
+
+      if (
+        tour.status !==
+        "confirmed"
+      ) {
+        let message =
+          "Only a confirmed tour can be marked as completed.";
+
+        if (
+          tour.status ===
+          "cancelled"
+        ) {
+          message =
+            "A cancelled tour cannot be marked as completed.";
+        }
+
+        if (
+          tour.status ===
+          "closed"
+        ) {
+          message =
+            "A closed tour cannot be marked as completed.";
+        }
+
+        if (
+          tour.status ===
+          "active"
+        ) {
+          message =
+            "This tour cannot be marked as completed from its current status.";
+        }
+
+        return res
+          .status(409)
+          .json({
+            success: false,
+            message,
+          });
+      }
+
+      /* =====================================
+         MARK TOUR AS COMPLETED
+
+         The status condition also protects
+         against two requests trying to
+         complete the same tour at once.
+      ===================================== */
+
+      const completedTour =
+        await Tour.findOneAndUpdate(
+          {
+            _id: tourId,
+            agencyId,
+            status:
+              "confirmed",
+          },
+          {
+            $set: {
+              status:
+                "completed",
+
+              completedAt:
+                new Date(),
+            },
+          },
+          {
+            new: true,
+            runValidators: true,
+          }
+        );
+
+      if (
+        !completedTour
+      ) {
+        return res
+          .status(409)
+          .json({
+            success: false,
+            message:
+              "The tour status changed before it could be completed. Please refresh and try again.",
+          });
+      }
+
+      /* =====================================
+         RESPONSE
+      ===================================== */
+
+      return res
+        .status(200)
+        .json({
+          success: true,
+
+          message:
+            "Tour marked as completed successfully.",
+
+          tour: {
+            id:
+              completedTour._id.toString(),
+
+            customerName:
+              completedTour.customerName,
+
+            customerPhone:
+              completedTour.customerPhone,
+
+            destination:
+              completedTour.destination,
+
+            vehicleName:
+              completedTour.vehicleName,
+
+            vehicleNumber:
+              completedTour.vehicleNumber,
+
+            startDateTime:
+              completedTour.startDateTime,
+
+            endDateTime:
+              completedTour.endDateTime,
+
+            status:
+              completedTour.status,
+
+            completedAt:
+              completedTour.completedAt,
+          },
+        });
+    } catch (error) {
+      console.error(
+        "Complete admin tour error:",
+        error
+      );
+
+      return res
+        .status(500)
+        .json({
+          success: false,
+          message:
+            "Unable to complete tour.",
+        });
+    }
+  };

@@ -4,6 +4,7 @@ import axios from "axios";
 
 import {
   CalendarDays,
+  CheckCircle2,
   Clock,
   MapPin,
   Phone,
@@ -24,6 +25,7 @@ import type {
 
 import {
   cancelAdminTour,
+  completeAdminTour,
 } from "@/services/adminTourCalendarService";
 
 import {
@@ -44,6 +46,9 @@ interface TourDetailsModalProps {
   onClose: () => void;
 
   onCancelled?: () =>
+    void | Promise<void>;
+
+  onCompleted?: () =>
     void | Promise<void>;
 }
 
@@ -118,6 +123,7 @@ const TourDetailsModal = ({
   tour,
   onClose,
   onCancelled,
+  onCompleted,
 }: TourDetailsModalProps) => {
   const {
     csrfToken,
@@ -126,6 +132,11 @@ const TourDetailsModal = ({
   const [
     showCancelForm,
     setShowCancelForm,
+  ] = useState(false);
+
+  const [
+    showCompleteForm,
+    setShowCompleteForm,
   ] = useState(false);
 
   const [
@@ -139,13 +150,27 @@ const TourDetailsModal = ({
   ] = useState(false);
 
   const [
+    isCompleting,
+    setIsCompleting,
+  ] = useState(false);
+
+  const [
     cancelError,
     setCancelError,
+  ] = useState("");
+
+  const [
+    completeError,
+    setCompleteError,
   ] = useState("");
 
   if (!tour) {
     return null;
   }
+
+  const isProcessing =
+    isCancelling ||
+    isCompleting;
 
   const balanceAmount =
     Math.max(
@@ -159,12 +184,72 @@ const TourDetailsModal = ({
     );
 
   /* =======================================
+     COMPLETE TOUR
+  ======================================= */
+
+  const handleCompleteTour =
+    async () => {
+      if (isProcessing) {
+        return;
+      }
+
+      if (!csrfToken) {
+        setCompleteError(
+          "Your admin session could not be verified. Please refresh the page and try again."
+        );
+
+        return;
+      }
+
+      try {
+        setIsCompleting(
+          true
+        );
+
+        setCompleteError("");
+
+        await completeAdminTour(
+          tour.id,
+          csrfToken
+        );
+
+        if (onCompleted) {
+          await onCompleted();
+        }
+
+        onClose();
+      } catch (error) {
+        if (
+          axios.isAxiosError<ApiErrorResponse>(
+            error
+          )
+        ) {
+          setCompleteError(
+            error.response?.data
+              ?.message ||
+              "Unable to complete the tour."
+          );
+
+          return;
+        }
+
+        setCompleteError(
+          "Unable to complete the tour."
+        );
+      } finally {
+        setIsCompleting(
+          false
+        );
+      }
+    };
+
+  /* =======================================
      CANCEL TOUR
   ======================================= */
 
   const handleCancelTour =
     async () => {
-      if (isCancelling) {
+      if (isProcessing) {
         return;
       }
 
@@ -220,12 +305,29 @@ const TourDetailsModal = ({
     };
 
   /* =======================================
+     CLOSE COMPLETE FORM
+  ======================================= */
+
+  const handleKeepCompleteTour =
+    () => {
+      if (isProcessing) {
+        return;
+      }
+
+      setShowCompleteForm(
+        false
+      );
+
+      setCompleteError("");
+    };
+
+  /* =======================================
      CLOSE CANCEL FORM
   ======================================= */
 
   const handleKeepTour =
     () => {
-      if (isCancelling) {
+      if (isProcessing) {
         return;
       }
 
@@ -244,7 +346,7 @@ const TourDetailsModal = ({
     <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4"
       onClick={
-        isCancelling
+        isProcessing
           ? undefined
           : onClose
       }
@@ -438,6 +540,78 @@ const TourDetailsModal = ({
         </div>
 
         {/* =================================
+            COMPLETE TOUR CONFIRMATION
+        ================================= */}
+
+        {tour.status ===
+          "confirmed" &&
+          showCompleteForm && (
+            <div className="border-t border-emerald-100 bg-emerald-50/60 p-6">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                  <CheckCircle2
+                    size={20}
+                  />
+                </div>
+
+                <div>
+                  <h4 className="font-semibold text-emerald-800">
+                    Mark this tour
+                    as completed?
+                  </h4>
+
+                  <p className="mt-1 text-sm leading-6 text-emerald-700">
+                    This confirms that
+                    the tour has
+                    finished. It will
+                    be recorded as a
+                    completed tour in
+                    Tour History.
+                  </p>
+                </div>
+              </div>
+
+              {completeError && (
+                <div className="mt-4 rounded-xl border border-red-200 bg-white px-4 py-3 text-sm font-medium text-red-600">
+                  {
+                    completeError
+                  }
+                </div>
+              )}
+
+              <div className="mt-5 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  onClick={
+                    handleKeepCompleteTour
+                  }
+                  disabled={
+                    isProcessing
+                  }
+                  className="rounded-xl border border-[#d9e4e8] bg-white px-5 py-2.5 text-sm font-semibold text-[#31515e] transition hover:bg-[#f5f8f9] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  Keep Tour
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    void handleCompleteTour()
+                  }
+                  disabled={
+                    isProcessing
+                  }
+                  className="rounded-xl bg-emerald-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isCompleting
+                    ? "Completing..."
+                    : "Confirm Completion"}
+                </button>
+              </div>
+            </div>
+          )}
+
+        {/* =================================
             CANCEL TOUR FORM
         ================================= */}
 
@@ -498,7 +672,7 @@ const TourDetailsModal = ({
                     )
                   }
                   disabled={
-                    isCancelling
+                    isProcessing
                   }
                   placeholder="Example: Customer requested cancellation."
                   className="mt-2 w-full resize-none rounded-xl border border-[#d8e3e7] bg-white px-4 py-3 text-sm text-[#163f4f] outline-none transition placeholder:text-[#9aadb5] focus:border-[#06364a] focus:ring-2 focus:ring-[#06364a]/10 disabled:cursor-not-allowed disabled:opacity-60"
@@ -525,7 +699,7 @@ const TourDetailsModal = ({
                     handleKeepTour
                   }
                   disabled={
-                    isCancelling
+                    isProcessing
                   }
                   className="rounded-xl border border-[#d9e4e8] bg-white px-5 py-2.5 text-sm font-semibold text-[#31515e] transition hover:bg-[#f5f8f9] disabled:cursor-not-allowed disabled:opacity-60"
                 >
@@ -538,7 +712,7 @@ const TourDetailsModal = ({
                     void handleCancelTour()
                   }
                   disabled={
-                    isCancelling
+                    isProcessing
                   }
                   className="rounded-xl bg-red-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
                 >
@@ -557,29 +731,62 @@ const TourDetailsModal = ({
         <div className="flex flex-col-reverse gap-3 border-t border-[#e9eff2] p-5 sm:flex-row sm:justify-end">
           {tour.status ===
             "confirmed" &&
-            !showCancelForm && (
-              <button
-                type="button"
-                onClick={() => {
-                  setCancelError(
-                    ""
-                  );
+            !showCancelForm &&
+            !showCompleteForm && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCompleteError(
+                      ""
+                    );
 
-                  setShowCancelForm(
-                    true
-                  );
-                }}
-                className="rounded-xl border border-red-200 bg-white px-5 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50"
-              >
-                Cancel Tour
-              </button>
+                    setShowCancelForm(
+                      false
+                    );
+
+                    setShowCompleteForm(
+                      true
+                    );
+                  }}
+                  disabled={
+                    isProcessing
+                  }
+                  className="rounded-xl border border-emerald-200 bg-white px-5 py-2.5 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  Mark as Completed
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCancelError(
+                      ""
+                    );
+
+                    setShowCompleteForm(
+                      false
+                    );
+
+                    setShowCancelForm(
+                      true
+                    );
+                  }}
+                  disabled={
+                    isProcessing
+                  }
+                  className="rounded-xl border border-red-200 bg-white px-5 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  Cancel Tour
+                </button>
+              </>
             )}
 
           <button
             type="button"
             onClick={onClose}
             disabled={
-              isCancelling
+              isProcessing
             }
             className="rounded-xl bg-[#06364a] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#0a4a62] disabled:cursor-not-allowed disabled:opacity-60"
           >

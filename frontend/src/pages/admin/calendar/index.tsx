@@ -1,12 +1,17 @@
 import Head from "next/head";
 
 import ProtectedAdminRoute from "@/components/admin/auth/ProtectedAdminRoute";
+
 import AdminLayout from "@/components/admin/layout/AdminLayout";
 
 import CalendarHeader from "@/components/admin/calendar/CalendarHeader";
+
 import CalendarGrid from "@/components/admin/calendar/CalendarGrid";
+
 import SelectedDayTours from "@/components/admin/calendar/SelectedDayTours";
+
 import CalendarLegend from "@/components/admin/calendar/CalendarLegend";
+
 import TourDetailsModal from "@/components/admin/calendar/TourDetailsModal";
 
 import {
@@ -23,12 +28,9 @@ const AdminCalendarPage = () => {
     selectedTour,
     calendarDays,
     selectedDateTours,
-
     setSelectedDate,
     setSelectedTour,
-
     refreshTours,
-
     goPreviousMonth,
     goNextMonth,
     goToday,
@@ -50,7 +52,7 @@ const AdminCalendarPage = () => {
       <ProtectedAdminRoute>
         <AdminLayout
           title="Tour Calendar"
-          subtitle="View confirmed, active and cancelled tours."
+          subtitle="View confirmed, completed and cancelled tours."
         >
           <div className="space-y-6">
             <CalendarHeader
@@ -95,7 +97,9 @@ const AdminCalendarPage = () => {
                     calendarDays={
                       calendarDays
                     }
-                    tours={tours}
+                    tours={
+                      tours
+                    }
                     onSelectDate={
                       setSelectedDate
                     }
@@ -127,6 +131,9 @@ const AdminCalendarPage = () => {
               )
             }
             onCancelled={
+              refreshTours
+            }
+            onCompleted={
               refreshTours
             }
           />

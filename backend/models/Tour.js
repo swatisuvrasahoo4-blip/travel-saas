@@ -127,6 +127,11 @@ const tourSchema =
         default: "",
       },
 
+      completedAt: {
+        type: Date,
+        default: null,
+      },
+
       closedAt: {
         type: Date,
         default: null,

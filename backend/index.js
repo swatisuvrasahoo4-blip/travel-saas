@@ -1,28 +1,50 @@
 import dns from "dns/promises";
 
 import express from "express";
+
 import dotenv from "dotenv";
+
 import cors from "cors";
+
 import helmet from "helmet";
+
 import rateLimit from "express-rate-limit";
+
 import cookieParser from "cookie-parser";
 
 import agencyRoutes from "./routes/agency.js";
+
 import destinationRoutes from "./routes/destination.js";
+
 import packageRoutes from "./routes/package.js";
+
 import reviewRoutes from "./routes/review.js";
+
 import galleryRoutes from "./routes/gallery.js";
+
 import vehicleRoutes from "./routes/vehicle.js";
+
 import contactMessageRoutes from "./routes/contactMessage.js";
+
 import enquiryRoutes from "./routes/enquiry.js";
 
 import adminAuthRoutes from "./routes/adminAuth.js";
+
 import adminDashboardRoutes from "./routes/adminDashboard.js";
+
 import adminEnquiryRoutes from "./routes/adminEnquiry.js";
+
 import adminReviewRoutes from "./routes/adminReviews.js";
+
 import adminGalleryRoutes from "./routes/adminGallery.js";
+
 import adminTourRoutes from "./routes/adminTour.js";
+
 import adminTourCalendarRoutes from "./routes/adminTourCalendar.js";
+
+import adminContactMessageRoutes from "./routes/adminContactMessage.js";
+
+import adminTourHistoryRoutes from "./routes/adminTourHistory.js";
 
 import connectDB from "./config/db.js";
 
@@ -75,18 +97,22 @@ const allowedOrigins = (
   ""
 )
   .split(",")
-  .map((origin) => origin.trim())
+  .map((origin) =>
+    origin.trim()
+  )
   .filter(Boolean);
 
 app.use(
   cors({
-    origin: (origin, callback) => {
+    origin: (
+      origin,
+      callback
+    ) => {
       /*
        * Allow requests without an
        * Origin header, such as
        * server-to-server requests.
        */
-
       if (!origin) {
         return callback(
           null,
@@ -98,7 +124,6 @@ app.use(
        * Allow configured frontend
        * domains only.
        */
-
       if (
         allowedOrigins.includes(
           origin
@@ -113,7 +138,6 @@ app.use(
       /*
        * Block unknown origins.
        */
-
       return callback(
         new Error(
           "Not allowed by CORS"
@@ -195,19 +219,45 @@ app.use(
 );
 
 /* =========================================
-   HEALTH ROUTE
+   ROOT ROUTE
 ========================================= */
 
 app.get(
   "/",
   (req, res) => {
-    res
+    return res
       .status(200)
       .json({
         success: true,
 
         message:
           "Travel SaaS backend is running",
+      });
+  }
+);
+
+/* =========================================
+   HEALTH CHECK
+
+   Lightweight public endpoint used by
+   uptime monitoring services.
+
+   IMPORTANT:
+   - No database query
+   - No authentication
+   - No agency information
+   - No environment information
+   - No sensitive information
+========================================= */
+
+app.get(
+  "/health",
+  (req, res) => {
+    return res
+      .status(200)
+      .json({
+        success: true,
+        status: "ok",
       });
   }
 );
@@ -295,13 +345,23 @@ app.use(
   adminTourCalendarRoutes
 );
 
+app.use(
+  "/admin-contact-messages",
+  adminContactMessageRoutes
+);
+
+app.use(
+  "/admin-tour-history",
+  adminTourHistoryRoutes
+);
+
 /* =========================================
    404 HANDLER
 ========================================= */
 
 app.use(
   (req, res) => {
-    res
+    return res
       .status(404)
       .json({
         success: false,
@@ -328,7 +388,6 @@ app.use(
     /*
      * CORS error.
      */
-
     if (
       error.message ===
       "Not allowed by CORS"
@@ -346,7 +405,6 @@ app.use(
     /*
      * General server error.
      */
-
     return res
       .status(500)
       .json({

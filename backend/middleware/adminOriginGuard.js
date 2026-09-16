@@ -20,8 +20,10 @@ export const requireAllowedAdminOrigin = (
   const origin =
     req.get("origin");
 
-  // Local/server-to-server requests may not
-  // always include Origin.
+  /*
+   * Some server-to-server requests
+   * may not contain Origin.
+   */
   if (!origin) {
     return next();
   }
@@ -32,14 +34,12 @@ export const requireAllowedAdminOrigin = (
   if (
     !allowedOrigins.includes(origin)
   ) {
-    return res
-      .status(403)
-      .json({
-        success: false,
-        message:
-          "Request origin is not allowed.",
-      });
+    return res.status(403).json({
+      success: false,
+      message:
+        "Request origin is not allowed.",
+    });
   }
 
-  next();
+  return next();
 };

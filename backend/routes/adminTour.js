@@ -4,6 +4,7 @@ import {
   createTourFromEnquiry,
   checkVehicleAvailability,
   cancelTour,
+  completeTour,
 } from "../controllers/adminTour.js";
 
 import {
@@ -21,6 +22,10 @@ import {
 const router =
   express.Router();
 
+/* =========================================
+   CHECK VEHICLE AVAILABILITY
+========================================= */
+
 router.post(
   "/check-vehicle-availability",
   requireAdmin,
@@ -29,6 +34,10 @@ router.post(
   checkVehicleAvailability
 );
 
+/* =========================================
+   CREATE TOUR FROM ENQUIRY
+========================================= */
+
 router.post(
   "/from-enquiry/:enquiryId",
   requireAdmin,
@@ -36,6 +45,22 @@ router.post(
   requireAdminCsrf,
   createTourFromEnquiry
 );
+
+/* =========================================
+   COMPLETE TOUR
+========================================= */
+
+router.patch(
+  "/:tourId/complete",
+  requireAdmin,
+  requireAllowedAdminOrigin,
+  requireAdminCsrf,
+  completeTour
+);
+
+/* =========================================
+   CANCEL TOUR
+========================================= */
 
 router.patch(
   "/:tourId/cancel",

@@ -6,8 +6,7 @@ import crypto from "crypto";
 
 const getCsrfCookieOptions = () => {
   const isProduction =
-    process.env.NODE_ENV ===
-    "production";
+    process.env.NODE_ENV === "production";
 
   return {
     httpOnly: false,
@@ -16,11 +15,7 @@ const getCsrfCookieOptions = () => {
       ? "none"
       : "lax",
     maxAge:
-      3 *
-      24 *
-      60 *
-      60 *
-      1000,
+      3 * 24 * 60 * 60 * 1000,
   };
 };
 
@@ -31,10 +26,9 @@ const getCsrfCookieOptions = () => {
 export const createAdminCsrfToken = (
   res
 ) => {
-  const token =
-    crypto.randomBytes(
-      32
-    ).toString("hex");
+  const token = crypto
+    .randomBytes(32)
+    .toString("hex");
 
   res.cookie(
     "admin_csrf",
@@ -54,10 +48,6 @@ export const requireAdminCsrf = (
   res,
   next
 ) => {
-  /*
-   * Safe HTTP methods do not
-   * require CSRF validation.
-   */
   if (
     req.method === "GET" ||
     req.method === "HEAD" ||
@@ -76,36 +66,30 @@ export const requireAdminCsrf = (
     !cookieToken ||
     !headerToken
   ) {
-    return res
-      .status(403)
-      .json({
-        success: false,
-        message:
-          "Invalid security token.",
-      });
+    return res.status(403).json({
+      success: false,
+      message:
+        "Invalid security token.",
+    });
   }
 
-  const cookieBuffer =
-    Buffer.from(
-      cookieToken
-    );
+  const cookieBuffer = Buffer.from(
+    cookieToken
+  );
 
-  const headerBuffer =
-    Buffer.from(
-      headerToken
-    );
+  const headerBuffer = Buffer.from(
+    headerToken
+  );
 
   if (
     cookieBuffer.length !==
     headerBuffer.length
   ) {
-    return res
-      .status(403)
-      .json({
-        success: false,
-        message:
-          "Invalid security token.",
-      });
+    return res.status(403).json({
+      success: false,
+      message:
+        "Invalid security token.",
+    });
   }
 
   const tokenMatches =
@@ -115,13 +99,11 @@ export const requireAdminCsrf = (
     );
 
   if (!tokenMatches) {
-    return res
-      .status(403)
-      .json({
-        success: false,
-        message:
-          "Invalid security token.",
-      });
+    return res.status(403).json({
+      success: false,
+      message:
+        "Invalid security token.",
+    });
   }
 
   return next();

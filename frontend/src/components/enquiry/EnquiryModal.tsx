@@ -34,6 +34,10 @@ import {
   createEnquiry,
 } from "@/services/enquiryService";
 
+/* =========================================
+   VEHICLE OPTIONS
+========================================= */
+
 const vehicleOptions = [
   "Traveller",
   "Urbania",
@@ -41,6 +45,27 @@ const vehicleOptions = [
   "SML",
   "Dzire",
 ];
+
+/* =========================================
+   DATE HELPER
+========================================= */
+
+const getTodayDate = () => {
+  const today = new Date();
+
+  const year =
+    today.getFullYear();
+
+  const month = String(
+    today.getMonth() + 1
+  ).padStart(2, "0");
+
+  const day = String(
+    today.getDate()
+  ).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+};
 
 interface EnquiryFormProps {
   formKey: string;
@@ -56,6 +81,9 @@ const EnquiryForm = ({
     enquiryData,
     closeEnquiry,
   } = useEnquiry();
+
+  const today =
+    getTodayDate();
 
   const [name, setName] =
     useState("");
@@ -201,6 +229,10 @@ const EnquiryForm = ({
     isPackageEnquiry ||
     isTripEnquiry;
 
+  /* =========================================
+     SUBMIT
+  ========================================= */
+
   const handleSubmit = async (
     event: FormEvent<HTMLFormElement>
   ) => {
@@ -238,12 +270,30 @@ const EnquiryForm = ({
         return;
       }
 
+      if (fromDate < today) {
+        setErrorMessage(
+          "From date cannot be in the past."
+        );
+        return;
+      }
+
       if (toDate < fromDate) {
         setErrorMessage(
           "To date cannot be before from date."
         );
         return;
       }
+    }
+
+    if (
+      !usesDateRange &&
+      travelDate &&
+      travelDate < today
+    ) {
+      setErrorMessage(
+        "Travel date cannot be in the past."
+      );
+      return;
     }
 
     if (
@@ -584,6 +634,7 @@ const EnquiryForm = ({
               <input
                 type="date"
                 required
+                min={today}
                 value={fromDate}
                 onChange={(event) => {
                   const value =
@@ -622,7 +673,7 @@ const EnquiryForm = ({
                 required
                 min={
                   fromDate ||
-                  undefined
+                  today
                 }
                 value={toDate}
                 onChange={(event) =>
@@ -653,6 +704,7 @@ const EnquiryForm = ({
 
             <input
               type="date"
+              min={today}
               value={travelDate}
               onChange={(event) =>
                 setTravelDate(
@@ -700,8 +752,6 @@ const EnquiryForm = ({
           Vehicle Type
         </label>
 
-        {/* Icon stays only in this box */}
-
         <div className="relative">
           <Car
             size={18}
@@ -744,8 +794,6 @@ const EnquiryForm = ({
             className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-10 pr-4 text-sm text-gray-800 outline-none transition focus:border-orange-400"
           />
         </div>
-
-        {/* Text-only Vehicle Suggestions */}
 
         {showVehicleOptions &&
           filteredVehicleOptions.length >
@@ -891,6 +939,10 @@ const EnquiryForm = ({
     </form>
   );
 };
+
+/* =========================================
+   ENQUIRY MODAL
+========================================= */
 
 const EnquiryModal = () => {
   const { agency } =
